@@ -1,4 +1,4 @@
-﻿@page "{currentpage?}"
+﻿@page "{currentpage?}" 
 @model Web.Pages.Products.IndexModel
 
 <style>
@@ -14,14 +14,14 @@
 <div class="container-lg text-center">
     <div class="row">
         <div class="col-3 border border-2 rounded-3 my-4">
-            <form method="post" asp-page-handler="Filter">
+            <form method="get">
                 <h4>Price Filter</h4>
                 <div class="row">
                     <div class="col">
-                        <input asp-for="MinPriceFilter" type="number" class="form-control" min="1" max="100" />
+                        <input asp-for="MinPrice" type="number" class="form-control" min="1" max="100"/>
                     </div>
                     <div class="col">
-                        <input asp-for="MaxPriceFilter" type="number" class="form-control" min="1" max="100" />
+                        <input asp-for="MaxPrice" type="number" class="form-control" min="1" max="100"/>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Filter</button>
@@ -47,7 +47,7 @@
                     @for (var i = 1; i <= Model.TotalPages; i++)
                     {
                         <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                            <a asp-page="Index" asp-route-currentpage="@i" class="page-link">@i</a>
+                            <a asp-page="Index" asp-route-currentpage="@i" asp-route-MinPrice="@Model.MinPrice" asp-route-MaxPrice="@Model.MaxPrice" class="page-link">@i</a>
                         </li>
                     }
                 </ul>

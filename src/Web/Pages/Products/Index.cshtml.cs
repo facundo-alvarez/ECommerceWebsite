@@ -10,10 +10,12 @@ namespace Web.Pages.Products
     public class IndexModel : PageModel
     {
         private readonly IPaginationService _paginationService;
+        private readonly IProductService _productService;
 
-        public IndexModel(IPaginationService paginationService)
+        public IndexModel(IPaginationService paginationService, IProductService productService)
         {
             _paginationService = paginationService;
+            _productService = productService;
         }
 
         public IEnumerable<Product> ProductList { get; set; }
@@ -23,24 +25,30 @@ namespace Web.Pages.Products
         public int Count { get; set; }
         public int PageSize { get; set; } = 6;
 
-        [BindProperty]
-        public int MinPriceFilter { get; set; } = 1;
 
-        [BindProperty]
-        public int MaxPriceFilter { get; set; } = 100;
+        [BindProperty(SupportsGet = true)]
+        public int? MinPrice { get; set; } = 1;
+
+
+        [BindProperty(SupportsGet = true),]
+        public int? MaxPrice { get; set; } = 100;
+
 
 
         public void OnGet()
         {
-            ProductList = _paginationService.GetPaginatedResult(CurrentPage, PageSize);
-            Count = _paginationService.GetCount();
+            var productsFromDb = _productService.GetProducts();
+
+            if (MinPrice != 1 || MaxPrice != 100)
+            {
+                productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
+            }
+
+            Count = productsFromDb.Count();
+            ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);
+
         }
 
-        public void OnPostFilter()
-        {
-
-
-        }
 
         public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
     }

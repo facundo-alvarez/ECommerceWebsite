@@ -9,7 +9,6 @@ namespace ApplicationCore.Interfaces
 {
     public interface IPaginationService
     {
-        List<Product> GetPaginatedResult(int currentPage, int pageSize = 10);
-        int GetCount();
+        List<Product> GetPaginatedResult(IEnumerable<Product> data, int currentPage, int pageSize);
     }
 }

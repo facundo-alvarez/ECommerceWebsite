@@ -1,0 +1,24 @@
+﻿@page "{id}"
+@model Web.Pages.Admin.ProductsManagement.DeleteModel
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<h3>Delete Product</h3>
+
+<form method="post">
+    <div class="form-control">
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Id"></label>
+            <input class="form-control" asp-for="Product.Id" disabled/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Name"></label>
+            <input class="form-control" asp-for="Product.Name" disabled/>
+        </div>
+        <div>
+            <a class="btn btn-secondary" asp-page="Index">Back</a>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</form>

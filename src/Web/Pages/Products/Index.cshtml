@@ -1,0 +1,60 @@
+﻿@page "{currentpage?}"
+@model Web.Pages.Products.IndexModel
+
+<style>
+    .desc {
+        display: block;
+        height: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="container-lg text-center">
+    <div class="row">
+        <div class="col-3 border border-2 rounded-3 my-4">
+            <form method="post" asp-page-handler="Filter">
+                <h4>Price Filter</h4>
+                <div class="row">
+                    <div class="col">
+                        <input asp-for="MinPriceFilter" type="number" class="form-control" min="1" max="100" />
+                    </div>
+                    <div class="col">
+                        <input asp-for="MaxPriceFilter" type="number" class="form-control" min="1" max="100" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <nav class="col-9">  
+            <div class="row">
+                @foreach(var product in Model.ProductList)
+                {
+                    <div class="card mx-2 my-4 border-1" style="width: 12rem;">
+                        <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <h6 class="card-text">@product.Price.ToString("C")</h6>
+                            <p class="card-text desc">@product.Description</p>
+                            <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-primary w-100">View</a>
+                        </div>
+                    </div> 
+                }
+            </div>
+            <nav>
+                <ul class="pagination">
+                    @for (var i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a asp-page="Index" asp-route-currentpage="@i" class="page-link">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </nav>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,51 @@
+﻿@page "{id?}"
+@model Web.Pages.Admin.ProductsManagement.UpsertModel
+@{
+    Layout = "_LayoutAdmin";
+}
+
+
+<form method="post" enctype="multipart/form-data">
+    @if(@Model.Product.Id == 0)
+    {
+        <h3>Add Product</h3>
+    }
+    else
+    {
+        <h3>Edit Product</h3>
+        <input hidden asp-for="Product.Id">
+    }
+
+    <div class="form-control">
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Name"></label>
+            <input class="form-control" asp-for="Product.Name"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Description"></label>
+            <textarea class="form-control" rows="3" asp-for="Product.Description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Ingredients"></label>
+            <textarea class="form-control" rows="2" asp-for="Product.Ingredients"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.Price"></label>
+            <input class="form-control" asp-for="Product.Price"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" asp-for="Product.Image"></label>
+          <input class="form-control" asp-for="Product.Image" type="file" >
+        </div>
+        <a class="btn btn-secondary" asp-page="Index">Back</a>
+       
+        @if(@Model.Product.Id == 0)
+        {
+             <button type="submit" class="btn btn-primary">Submit</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">Update</button>
+        } 
+    </div>
+</form>

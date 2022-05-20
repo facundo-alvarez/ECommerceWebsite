@@ -1,0 +1,91 @@
+﻿@page "{id}"
+@model Web.Pages.Products.DetailsModel
+
+<div class="container-lg">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light p-2 rounded-0">
+                    <li class="breadcrumb-item">Home</li>
+                    <li class="breadcrumb-item">Kitchen Spices</li>
+                    <li class="breadcrumb-item active">Fresh And Healthy</li>
+                </ol>
+            </nav>
+        </div>    
+    </div>
+
+    <div class="row mb-5">
+        <div class="col d-flex justify-content-end">
+             <img class="mx-3" style="height: auto" src="@SiteConstants.ImagePath@Model.Product.Image" asp-append-version="true" />
+        </div>
+        <div class="col">
+            <form method="post">
+                <input hidden name="ProductId" value="@Model.Product.Id" />
+                <p>Fresh-Theme</p>
+                <h1>@Model.Product.Name</h1>
+                <h3>@Model.Product.Price</h3>
+                <input type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" asp-for="Quantity"/>
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+                <button type="submit" class="btn btn-primary w-75">Add To Cart</button>
+                <button class="btn btn-outline-dark w-75">Buy Now</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row" style="height: 25rem">
+        <div class="col">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="ingridients-tab" data-toggle="tab" href="#ingridients" role="tab" aria-controls="ingridients" aria-selected="false">Ingridients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">@Model.Product.Description</div>
+                <div class="tab-pane fade" id="ingridients" role="tabpanel" aria-labelledby="ingridients-tab">@Model.Product.Ingredients</div>
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">...</div>
+            </div>
+        </div>
+    </div>
+
+
+    <h3>You May Also Like</h3>
+
+    <div class="row">
+        <div class="col">
+            <div class="d-flex justify-content-center">
+                @for(var i = 0; i < 4; i++)
+                {
+                    <div class="card mx-2" style="width: 12rem;">
+                        <img src="/images/category.png" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>  
+                }     
+            </div>
+            
+        </div>
+       
+    </div>
+   
+</div>
+
+
+@section scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $('#myTab a').on('click', function (e) {
+          e.preventDefault()
+          $(this).tab('show')
+        })
+    </script>
+}

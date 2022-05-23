@@ -1,4 +1,4 @@
-﻿@page "{category:alpha?}/{currentpage?}" 
+﻿@page "{category:alpha}/{currentpage?}" 
 @model Web.Pages.Products.IndexModel
 
 <style>
@@ -76,7 +76,7 @@
                     @for (var i = 1; i <= Model.TotalPages; i++)
                     {
                         <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                            <a asp-page="Index" asp-route-currentpage="@i" asp-route-MinPrice="@Model.MinPrice" asp-route-MaxPrice="@Model.MaxPrice" class="page-link">@i</a>
+                            <a asp-page="Index"  asp-route-currentpage="@i" asp-route-MinPrice="@Model.MinPrice" asp-route-MaxPrice="@Model.MaxPrice" class="page-link">@i</a>
                         </li>
                     }
                 </ul>

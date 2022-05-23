@@ -39,7 +39,7 @@ namespace Web.Pages.Products
         public Product Product { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string? Category { get; set; }
+        public string Category { get; set; }
 
 
 
@@ -50,12 +50,14 @@ namespace Web.Pages.Products
             var productsFromDb = _productService.GetProducts();
             var categories = _categoryService.GetCategories();
 
-            if(Category != null)
+
+            if(Category != "all")
             {
                 var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
 
                 productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
             }
+
 
             if (MinPrice != null || MaxPrice != null)
             {
@@ -97,7 +99,8 @@ namespace Web.Pages.Products
             var productsFromDb = _productService.GetProducts();
             var categories = _categoryService.GetCategories();
 
-            if (Category != null)
+
+            if (Category != "all")
             {
                 var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
 

@@ -3,25 +3,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Web.Pages.Admin.ProductsManagement
 {
     public class UpsertModel : PageModel
     {
         private readonly IProductService _productSevice;
+        private readonly ICategoryService _categoryService;
         private readonly IWebHostEnvironment _environment;
 
-        public UpsertModel(IProductService productSevice, IWebHostEnvironment environment)
+        public UpsertModel(IProductService productSevice, IWebHostEnvironment environment, ICategoryService categoryService)
         {
             _productSevice = productSevice;
+            _categoryService = categoryService;
             _environment = environment;
         }
         [BindProperty]
         [Required]
         public Product Product { get; set; }
 
+        [BindProperty]
+        public IEnumerable<SelectListItem> CategoryDropDown { get; set; }
+
         public IActionResult OnGet(int? id)
         {
+            CategoryDropDown = _categoryService.GetCategories().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+
             Product = new Product();
             if(id == null)
             {

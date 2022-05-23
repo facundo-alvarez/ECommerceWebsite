@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Context;
 using Infrastructure.Repository;
+using ApplicationCore.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +40,13 @@ builder.Services.AddIdentity<IdentityUser,IdentityRole>()
     .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IPaginationService, PaginationService>();
+builder.Services.AddTransient<IGenericRepository<Category>, GenericRepository<Category>>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
+
+builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+
+builder.Services.AddTransient<IPaginationService, PaginationService>();
 
 builder.Services.Configure<RouteOptions>(options =>
 {

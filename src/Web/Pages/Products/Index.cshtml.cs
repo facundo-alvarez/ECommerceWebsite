@@ -11,11 +11,13 @@ namespace Web.Pages.Products
     {
         private readonly IPaginationService _paginationService;
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
 
-        public IndexModel(IPaginationService paginationService, IProductService productService)
+        public IndexModel(IPaginationService paginationService, IProductService productService, ICategoryService categoryService)
         {
             _paginationService = paginationService;
             _productService = productService;
+            _categoryService = categoryService;
         }
 
         public IEnumerable<Product> ProductList { get; set; }
@@ -27,22 +29,35 @@ namespace Web.Pages.Products
 
 
         [BindProperty(SupportsGet = true)]
-        public int? MinPrice { get; set; } = 1;
+        public int? MinPrice { get; set; }
 
 
-        [BindProperty(SupportsGet = true),]
-        public int? MaxPrice { get; set; } = 100;
+        [BindProperty(SupportsGet = true)]
+        public int? MaxPrice { get; set; }
 
         [BindProperty]
         public Product Product { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string? Category { get; set; }
+
+
 
 
 
         public void OnGet()
         {
             var productsFromDb = _productService.GetProducts();
+            var categories = _categoryService.GetCategories();
 
-            if (MinPrice != 1 || MaxPrice != 100)
+            if(Category != null)
+            {
+                var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
+
+                productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
+            }
+
+            if (MinPrice != null || MaxPrice != null)
             {
                 productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
             }
@@ -79,10 +94,18 @@ namespace Web.Pages.Products
             HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
 
 
-
             var productsFromDb = _productService.GetProducts();
+            var categories = _categoryService.GetCategories();
 
-            if (MinPrice != 1 || MaxPrice != 100)
+            if (Category != null)
+            {
+                var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
+
+                productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
+            }
+
+
+            if (MinPrice != null || MaxPrice != null)
             {
                 productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
             }

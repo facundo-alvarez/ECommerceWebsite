@@ -1,5 +1,8 @@
 ﻿@page "{id}"
 @model Web.Pages.Products.DetailsModel
+@{
+    List<string> tags = Model.Product.Tags.Split(',').ToList();
+}
 
 <div class="container-lg">
     <div class="row">
@@ -23,7 +26,15 @@
                 <input hidden name="ProductId" value="@Model.Product.Id" />
                 <p>Fresh-Theme</p>
                 <h1>@Model.Product.Name</h1>
-                <h3>@Model.Product.Price</h3>
+                @if(Model.Product.IsOnSale)
+                {
+                    <span class="card-text text-muted text-decoration-line-through">@Model.Product.Price.ToString("C")</span>
+                    <h3>@Model.Product.SalePrice?.ToString("C")</h3>
+                }
+                else
+                {
+                    <h3>@Model.Product.Price</h3>
+                }
                 
                 @if(Model.Product.InStock)
                 {
@@ -36,10 +47,24 @@
                 {
                     <button disabled class="btn btn-primary w-75">Out Of Stock</button>                    
                 }
-               
+                
             </form>
         </div>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(tags[0]))
+    {
+        <div class="row mb-5">
+            <div class="col">
+                <h6>Tags</h6>
+                @foreach(var tag in tags)
+                {
+                    <span class="badge bg-secondary">@tag</span>
+                }
+            </div>
+        </div>   
+    }
+    
 
     <div class="row" style="height: 25rem">
         <div class="col">

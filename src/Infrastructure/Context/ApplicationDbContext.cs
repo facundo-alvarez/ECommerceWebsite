@@ -13,7 +13,6 @@ namespace Infrastructure.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
         }
 
         public DbSet<Product> Products { get; set; }

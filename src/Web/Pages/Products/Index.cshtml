@@ -1,4 +1,4 @@
-﻿@page "{currentpage?}" 
+﻿@page "{category:alpha?}/{currentpage?}" 
 @model Web.Pages.Products.IndexModel
 
 <style>
@@ -19,13 +19,13 @@
                 <h4>Price Filter</h4>
                 <div class="row">
                     <div class="col">
-                        <input asp-for="MinPrice" type="number" class="form-control" min="1" max="100"/>
+                        <input asp-for="MinPrice" type="number" class="form-control" min="1" max="100" placeholder="1"/>
                     </div>
                     <div class="col">
-                        <input asp-for="MaxPrice" type="number" class="form-control" min="1" max="100"/>
+                        <input asp-for="MaxPrice" type="number" class="form-control" min="1" max="100" placeholder="100"/>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary">Filter</button>                
             </form>
         </div>
 
@@ -42,7 +42,15 @@
                                     <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
                                 </a>
                                 <div class="card-body">
-                                    <h6 class="card-text">@product.Price.ToString("C")</h6>
+                                    @if(product.IsOnSale)
+                                    {
+                                        <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
+                                        <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
+                                    }
+                                    else
+                                    {
+                                        <h6 class="card-text">@product.Price.ToString("C")</h6>
+                                    }
                                     <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
                                         <h5 class="card-title">@product.Name</h5>
                                     </a>
@@ -81,3 +89,10 @@
 
 
 
+@section Scripts {
+    <script>
+
+
+    </script>
+
+}

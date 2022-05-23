@@ -45,8 +45,20 @@
           <input class="form-control" asp-for="Product.Image" type="file" >
         </div>
         <div class="mb-3">
+          <label class="form-label" asp-for="Product.Tags"></label>
+          <input class="form-control" asp-for="Product.Tags">
+        </div>
+        <div class="mb-3">
             <label class="form-check-label" asp-for="Product.InStock"></label>
-            <input type="checkbox" class="form-check-input" value="@Model.Product.InStock" asp-for="Product.InStock"/>
+            <input type="checkbox" class="form-check-input" asp-for="Product.InStock"/>
+        </div>
+        <div class="mb-3">
+            <label class="form-check-label" asp-for="Product.IsOnSale"></label>
+            <input type="checkbox" class="form-check-input" asp-for="Product.IsOnSale"/>            
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Product.SalePrice"></label>
+            <input class="form-control" asp-for="Product.SalePrice"/>            
         </div>
         <a class="btn btn-secondary" asp-page="Index">Back</a>
        

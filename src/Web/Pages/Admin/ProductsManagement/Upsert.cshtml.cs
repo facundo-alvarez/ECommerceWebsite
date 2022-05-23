@@ -19,12 +19,19 @@ namespace Web.Pages.Admin.ProductsManagement
             _categoryService = categoryService;
             _environment = environment;
         }
+
+
+
         [BindProperty]
         [Required]
         public Product Product { get; set; }
 
         [BindProperty]
         public IEnumerable<SelectListItem> CategoryDropDown { get; set; }
+
+
+
+
 
         public IActionResult OnGet(int? id)
         {
@@ -44,6 +51,9 @@ namespace Web.Pages.Admin.ProductsManagement
 
             return Page();
         }
+
+
+
 
         public async Task<IActionResult> OnPostAsync()
         {

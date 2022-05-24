@@ -46,6 +46,11 @@ namespace ApplicationCore.Services
         {
             return _productRepository.GetProductByIdNoTracking(id);
         }
+
+        public IEnumerable<Product> GetRelatedProducts(Category category)
+        {
+            return _productRepository.GetProducts().Where(c => c.Category.Id == category.Id);
+        }
     }
 }
 

@@ -33,41 +33,7 @@
         <nav class="col-9">
 
             <div class="row row-cols-lg-3">
-                @foreach(var product in Model.ProductList)
-                {
-                    <div class="col">
-                        <form method="post"data-ajax="true" data-ajax-method="post" data-ajax-complete="completed">
-                            <input hidden name="Product.Id" value="@product.Id">
-                            <div class="card mx-2 my-4 border-1" style="width: 12rem;">
-                                <a asp-page="Details" asp-route-id="@product.Id">
-                                    <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
-                                </a>
-                                <div class="card-body">
-                                    @if(product.IsOnSale)
-                                    {
-                                        <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
-                                        <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
-                                    }
-                                    else
-                                    {
-                                        <h6 class="card-text">@product.Price.ToString("C")</h6>
-                                    }
-                                    <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
-                                        <h5 class="card-title">@product.Name</h5>
-                                    </a>
-                                    @if(!product.InStock)
-                                    {
-                                        <button disabled class="btn btn-primary w-100">Out Of Stock</button>
-                                    }
-                                    else
-                                    {
-                                        <button type="submit" class="btn btn-primary w-100">Add To Cart </button>
-                                    }
-                                </div>
-                            </div> 
-                        </form>
-                    </div>
-                }
+                <partial name="_ProductListPartial" model="Model.ProductList"></partial>
             </div>
 
 
@@ -81,9 +47,7 @@
                     }
                 </ul>
             </nav>
-
         </nav>
-
     </div>
 </div>
 

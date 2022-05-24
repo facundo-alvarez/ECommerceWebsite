@@ -32,12 +32,15 @@ namespace Web.Pages.Products
 
         public Category Category { get; set; }
 
+        public IEnumerable<Product> RelatedProducts { get; set; }
+
 
 
         public void OnGet(int id)
         {
             Product = _productService.GetProductById(id);
             Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
+            RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
         }
 
         public IActionResult OnPost()

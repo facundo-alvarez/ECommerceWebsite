@@ -7,6 +7,7 @@ namespace ApplicationCore.Interfaces
         IEnumerable<Product> GetProducts();
         Product GetProductById(int id);
         Product GetProductByIdNoTracking(int id);
+        IEnumerable<Product> GetRelatedProducts(Category category);
         void AddProduct(Product product);
         void SaveProduct();
         void RemoveProduct(Product product);

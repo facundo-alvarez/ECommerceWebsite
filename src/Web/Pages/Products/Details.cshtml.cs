@@ -11,10 +11,12 @@ namespace Web.Pages.Products
     public class DetailsModel : PageModel
     {
         private IProductService _productService;
+        private ICategoryService _categoryService;
 
-        public DetailsModel(IProductService productService)
+        public DetailsModel(IProductService productService, ICategoryService categoryService)
         {
             _productService = productService;
+            _categoryService = categoryService;
         }
 
         public Product Product { get; set; }
@@ -28,9 +30,14 @@ namespace Web.Pages.Products
         public int ProductId { get; set; }
 
 
+        public Category Category { get; set; }
+
+
+
         public void OnGet(int id)
         {
             Product = _productService.GetProductById(id);
+            Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
         }
 
         public IActionResult OnPost()

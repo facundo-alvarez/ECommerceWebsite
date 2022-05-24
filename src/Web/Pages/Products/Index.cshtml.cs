@@ -3,6 +3,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Web.Utility;
 
 namespace Web.Pages.Products
@@ -31,7 +32,6 @@ namespace Web.Pages.Products
         [BindProperty(SupportsGet = true)]
         public int? MinPrice { get; set; }
 
-
         [BindProperty(SupportsGet = true)]
         public int? MaxPrice { get; set; }
 
@@ -43,10 +43,9 @@ namespace Web.Pages.Products
 
 
 
-
-
         public void OnGet()
         {
+
             var productsFromDb = _productService.GetProducts();
             var categories = _categoryService.GetCategories();
 

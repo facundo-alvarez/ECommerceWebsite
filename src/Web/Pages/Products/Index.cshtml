@@ -32,6 +32,18 @@
 
         <nav class="col-9">
 
+            @if(Model.IsProductAdded)
+            {
+                <div class="toast position-absolute" role="alert" style="display:block; z-index:1000" id="MyToast">
+                    <div class="toast-header">
+                        <strong class="me-auto">Product Added</strong>
+                    </div>
+                </div>   
+            }
+
+
+                
+            
             <div class="row row-cols-lg-3">
                 <partial name="_ProductListPartial" model="Model.ProductList"></partial>
             </div>
@@ -54,12 +66,22 @@
 
 @section scripts{ 
     <script src="~/lib/jquery-validation-unobtrusive/jquery.unobtrusive-ajax.js"></script>
-    <script>
-       
-        completed = () => {
-            alert('Rarasras');               
-        };
 
-          
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var option = {
+                animation: true,
+                autohide: true,
+                delay: 2000
+            };
+
+            var toastHTMLElement = document.getElementById("MyToast")
+            var toastElement = new bootstrap.Toast(toastHTMLElement, option);
+
+            toastElement.show();
+    
+        }, false);  
     </script>
+
 }

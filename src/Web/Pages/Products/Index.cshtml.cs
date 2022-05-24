@@ -41,6 +41,8 @@ namespace Web.Pages.Products
         [BindProperty(SupportsGet = true)]
         public string Category { get; set; }
 
+        public bool IsProductAdded { get; set; }
+
 
 
         public void OnGet()
@@ -111,6 +113,8 @@ namespace Web.Pages.Products
             {
                 productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
             }
+
+            IsProductAdded = true;
 
             Count = productsFromDb.Count();
             ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);

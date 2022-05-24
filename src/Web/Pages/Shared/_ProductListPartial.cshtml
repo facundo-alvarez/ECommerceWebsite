@@ -3,7 +3,7 @@
 @foreach(var product in Model)
 {
     <div class="col">
-        <form method="post"data-ajax="true" data-ajax-method="post" data-ajax-complete="completed">
+        <form method="post">
             <input hidden name="Product.Id" value="@product.Id">
             <div class="card mx-2 my-4 border-1" style="width: 12rem;">
                 <a asp-page="Details" asp-route-id="@product.Id">

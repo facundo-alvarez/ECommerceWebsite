@@ -25,6 +25,7 @@
                 <input hidden name="ProductId" value="@Model.Product.Id" />
                 <p>Fresh-Theme</p>
                 <h1>@Model.Product.Name</h1>
+                <p>Quantity: @Model.Product.Quantity</p>
                 @if(Model.Product.IsOnSale)
                 {
                     <span class="card-text text-muted text-decoration-line-through">@Model.Product.Price.ToString("C")</span>

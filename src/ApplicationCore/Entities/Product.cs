@@ -32,5 +32,7 @@ namespace ApplicationCore.Entities
         public bool InStock { get; set; }
 
         public string? Tags { get; set; }
+
+        public string? Quantity { get; set; }
     }
 }

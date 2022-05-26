@@ -32,15 +32,14 @@ namespace Web.Pages.Products
         [Range(1, 50)]
         public int Quantity { get; set; } = 1;
 
-        [BindProperty]
-        public int ProductId { get; set; }
+        //[BindProperty]
+        //public int ProductId { get; set; }
 
 
         public Category Category { get; set; }
 
         public IEnumerable<Product> RelatedProducts { get; set; }
 
-        
         public List<string> Tags { get; set; }
         
         public bool IsAlreadyFavorite { get; set; }
@@ -55,16 +54,22 @@ namespace Web.Pages.Products
             RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
             Tags = Product.Tags.Split(',').ToList();
 
-            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var userFavorites = _favoriteService.GetUserProducts(userId).Where(p => p.ProductId == id).FirstOrDefault();
-            if(userFavorites != null)
+            if(HttpContext.User.Identity.IsAuthenticated)
             {
-                IsAlreadyFavorite = true;
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userFavorites = _favoriteService.GetUserProducts(userId).Where(p => p.ProductId == id).FirstOrDefault();
+                if(userFavorites != null)
+                {
+                    IsAlreadyFavorite = true;
+                }
             }
         }
 
-        public void OnPost()
+
+        public void OnGetAddToCart(int id, int quantity, int category)
         {
+            int numberOfItems = 0;
+            Product = _productService.GetProductById(id);
             if (ModelState.IsValid)
             {
                 List<Item> cartItems = new List<Item>();
@@ -73,59 +78,30 @@ namespace Web.Pages.Products
                 {
                     cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 }
-                if (cartItems.Any(p => p.Product.Id == ProductId))
+
+                if (cartItems.Any(p => p.Product.Id == id))
                 {
-                    var p = cartItems.FirstOrDefault(p => p.Product.Id == ProductId);
+                    var p = cartItems.FirstOrDefault(p => p.Product.Id == id);
                     int index = cartItems.IndexOf(p);
-                    cartItems[index].Quantity += this.Quantity;
+                    cartItems[index].Quantity += quantity;
+                    numberOfItems = cartItems.Count();
                 }
                 else
                 {
                     cartItems.Add(new Item()
                     {
-                        Product = _productService.GetProductById(ProductId),
-                        Quantity = Quantity
+                        Product = _productService.GetProductById(id),
+                        Quantity = quantity
                     });
+                    numberOfItems = 1;
                 }
 
                 HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
 
-
-                Product = _productService.GetProductById(ProductId);
-                Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
+                Product = _productService.GetProductById(id);
+                Category = _categoryService.GetCategories().Where(c => c.Id == category).FirstOrDefault();
                 RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
                 Tags = Product.Tags.Split(',').ToList();
-            }
-        }
-
-        public void OnGetAddToCart(int id)
-        {
-            if (ModelState.IsValid)
-            {
-                List<Item> cartItems = new List<Item>();
-
-                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
-                {
-                    cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-                }
-
-                if (cartItems.Any(p => p.Product.Id == ProductId))
-                {
-                    var p = cartItems.FirstOrDefault(p => p.Product.Id == ProductId);
-                    int index = cartItems.IndexOf(p);
-                    cartItems[index].Quantity += this.Quantity;
-                }
-                else
-                {
-                    cartItems.Add(new Item()
-                    {
-                        Product = _productService.GetProductById(ProductId),
-                        Quantity = Quantity
-                    });
-                }
-
-                HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
-
             }
         }
 
@@ -133,28 +109,42 @@ namespace Web.Pages.Products
 
         public JsonResult OnGetFavorite(int id, string favorite)
         {
-            var userId =_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            User_Product up = new User_Product()
+            if(HttpContext.User.Identity.IsAuthenticated)
             {
-                UserId = userId,
-                ProductId = id,
-            };
+                var userId =_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            if(favorite == "False")
-            {
-                _favoriteService.AddToFavorite(up);
-                IsAlreadyFavorite = true;
-                return new JsonResult("True");            
+                User_Product up = new User_Product()
+                {
+                    UserId = userId,
+                    ProductId = id,
+                };
+
+                if(favorite == "False")
+                {
+                    _favoriteService.AddToFavorite(up);
+                    IsAlreadyFavorite = true;
+                    return new JsonResult("True");            
+                }
+                else
+                {
+                    int favoriteId = _favoriteService.GetId(up);
+                    _favoriteService.RemoveFromFavorite(favoriteId);
+                    IsAlreadyFavorite = false;
+                    return new JsonResult("False");
+                }       
             }
             else
             {
-                int favoriteId = _favoriteService.GetId(up);
-                _favoriteService.RemoveFromFavorite(favoriteId);
-                IsAlreadyFavorite = false;
-                return new JsonResult("False");
-            }       
+                return new JsonResult("Not Autenticated");
+            }
+        }
 
+        public ActionResult OnGetPartialCart()
+        {
+            return new PartialViewResult()
+            {
+                ViewName = "_CartPartial"
+            };
         }
     }
 }

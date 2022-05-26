@@ -1,8 +1,5 @@
 ﻿@page "{id}"
 @model Web.Pages.Products.DetailsModel
-@{
-    
-}
 
 <div class="container-lg">
 
@@ -36,20 +33,20 @@
             }
             @if(Model.Product.InStock)
             {
-                <form method="post">  
-                    <input type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" asp-for="Quantity"/>
-                    <span asp-validation-for="Quantity" class="text-danger"></span>
-                    <input hidden name="ProductId" value="@Model.Product.Id" />
-                    <button asp-page="Details" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add To Cart</button>
-                </form>
+                
+                <input type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" asp-for="Quantity"/>
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+                <input hidden name="ProductId" value="@Model.Product.Id" />
+                <button asp-page="Details" id="addToCart" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add To Cart</button>
+                
 
                 @if(Model.IsAlreadyFavorite)
                 {
-                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Remove From Favorites</button>   
+                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Remove From Favorites</button>   
                 }
                 else
                 {
-                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Add To Favorites</button>    
+                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Add To Favorites</button>    
                 }
               
             }
@@ -59,11 +56,11 @@
                 
                 @if(Model.IsAlreadyFavorite)
                 {
-                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Remove From Favorites</button>   
+                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Remove From Favorites</button>   
                 }
                 else
                 {
-                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Add To Favorites</button>    
+                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Add To Favorites</button>    
                 }
             }
                 
@@ -135,12 +132,12 @@
         $(document).ready(function() {
             var cache = '@Model.IsAlreadyFavorite';
 
-            $('#addFavorite').click(function() {
+            $('#addToFavorites').click(function() {
                 $.ajax({
                     type: 'GET',
                     url: '@Url.Page("Details","Favorite")',
                     data: {
-                        id: @Model.ProductId,
+                        id: @Model.Product.Id,
                         favorite: cache
                     },
                     success: function(result) {
@@ -148,12 +145,17 @@
                         
                         if (result == "False") {
                             
-                            $('#addFavorite').html("Add To Favorites").prepend('<i class="bi bi-heart"></i>');
+                            $('#addToFavorites').html("Add To Favorites").prepend('<i class="bi bi-heart"></i>');
                         }
-                        else {
+                        if (result == "True") {
                             
-                            $('#addFavorite').html("Remove From Favorites").prepend('<i class="bi bi-heart"></i>');
+                            $('#addToFavorites').html("Remove From Favorites").prepend('<i class="bi bi-heart"></i>');
                         }
+                        if (result == "Not Autenticated")
+                        {
+                            alert('You need to login')
+                        }
+
                     },
                     failure: function() {
                         alert("failure");
@@ -162,6 +164,34 @@
                         alert("error");
                     }
                 });
+            });
+        });
+    </script>
+
+    <script>
+        $('#addToCart').click(function() {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Details","AddToCart")',
+                data: {
+                    id: @Model.Product.Id,
+                    quantity: @Model.Quantity,
+                    category: @Model.Category.Id
+                },
+                success: function(result) {
+                    $('#addToCart').html("Added To Cart").prepend('<i class="bi bi-cart-plus"></i>');
+                    $.get('@Url.Page("Details","PartialCart")', function(data) {
+                        $('#cartMenu').replaceWith(data);
+                    })
+
+                },
+                failure: function() {
+                    alert("failure");
+                },
+                error: function() {
+                    alert("error");
+                }
+
             });
         });
     </script>

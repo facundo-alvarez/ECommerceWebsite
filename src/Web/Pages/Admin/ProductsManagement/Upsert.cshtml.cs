@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Web.Pages.Admin.ProductsManagement
 {
@@ -42,7 +42,7 @@ namespace Web.Pages.Admin.ProductsManagement
             });
 
             Product = new Product();
-            if(id == null)
+            if (id == null)
             {
                 return Page();
             }
@@ -57,12 +57,12 @@ namespace Web.Pages.Admin.ProductsManagement
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var files = HttpContext.Request.Form.Files;
                 string webRootPath = _environment.WebRootPath;
 
-                if(Product.Id == 0)
+                if (Product.Id == 0)
                 {
                     string upload = webRootPath + SiteConstants.ImagePath;
                     string fileName = Guid.NewGuid().ToString();
@@ -74,13 +74,13 @@ namespace Web.Pages.Admin.ProductsManagement
                     }
 
                     Product.Image = fileName + extension;
-                    _productSevice.AddProduct(Product); 
+                    _productSevice.AddProduct(Product);
                 }
                 else
                 {
-                    var oldProduct= _productSevice.GetProductByIdNoTracking(Product.Id);
+                    var oldProduct = _productSevice.GetProductByIdNoTracking(Product.Id);
 
-                    if(files.Count > 0)
+                    if (files.Count > 0)
                     {
                         string upload = webRootPath + SiteConstants.ImagePath;
                         string fileName = Guid.NewGuid().ToString();

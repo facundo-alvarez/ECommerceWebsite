@@ -1,13 +1,13 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ApplicationCore.Entities
 {
     public class Product
     {
         public int Id { get; set; }
-        
+
         public string Name { get; set; }
 
         public string? Description { get; set; }
@@ -34,5 +34,8 @@ namespace ApplicationCore.Entities
         public string? Tags { get; set; }
 
         public string? Quantity { get; set; }
+
+
+        public ICollection<User_Product> User_Product { get; set; }
     }
 }

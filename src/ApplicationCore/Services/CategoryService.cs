@@ -14,7 +14,7 @@ namespace ApplicationCore.Services
 
         public IEnumerable<Category> GetCategories()
         {
-            return _genericRepositry.GetAll();           
+            return _genericRepositry.GetAll();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using ApplicationCore.Interfaces;
-using Infrastructure.Context;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
@@ -23,7 +23,8 @@ namespace Infrastructure.Repository
 
         public void Delete(object id)
         {
-            throw new NotImplementedException();
+            T existing = _table.Find(id);
+            _table.Remove(existing);
         }
 
         public T Get(int id)
@@ -33,7 +34,7 @@ namespace Infrastructure.Repository
 
         public void Insert(T entity)
         {
-            throw new NotImplementedException();
+            _table.Add(entity);
         }
 
         public void Save()

@@ -30,7 +30,7 @@ namespace Web.Pages.Admin.ProductsManagement
             string upload = _environment.WebRootPath + SiteConstants.ImagePath;
             var oldFile = Path.Combine(upload, Product.Image);
 
-            if(System.IO.File.Exists(oldFile))
+            if (System.IO.File.Exists(oldFile))
             {
                 System.IO.File.Delete(oldFile);
             }

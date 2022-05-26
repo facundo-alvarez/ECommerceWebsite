@@ -1,10 +1,11 @@
 ﻿@page "{id}"
 @model Web.Pages.Products.DetailsModel
 @{
-    List<string> tags = Model.Product.Tags.Split(',').ToList();
+    
 }
 
 <div class="container-lg">
+
     <div class="row">
         <div class="col">
             <nav aria-label="breadcrumb">
@@ -21,43 +22,60 @@
              <img class="mx-3" style="height: auto" src="@SiteConstants.ImagePath@Model.Product.Image" asp-append-version="true" />
         </div>
         <div class="col">
-            <form method="post">
-                <input hidden name="ProductId" value="@Model.Product.Id" />
-                <p>Fresh-Theme</p>
-                <h1>@Model.Product.Name</h1>
-                <p>Quantity: @Model.Product.Quantity</p>
-                @if(Model.Product.IsOnSale)
-                {
-                    <span class="card-text text-muted text-decoration-line-through">@Model.Product.Price.ToString("C")</span>
-                    <h3>@Model.Product.SalePrice?.ToString("C")</h3>
-                }
-                else
-                {
-                    <h3>@Model.Product.Price</h3>
-                }
-                
-                @if(Model.Product.InStock)
-                {
+
+            <h1>@Model.Product.Name</h1>
+            <p>Quantity: @Model.Product.Quantity</p>
+            @if(Model.Product.IsOnSale)
+            {
+                <span class="card-text text-muted text-decoration-line-through">@Model.Product.Price.ToString("C")</span>
+                <h3>@Model.Product.SalePrice?.ToString("C")</h3>
+            }
+            else
+            {
+                <h3>@Model.Product.Price</h3>
+            }
+            @if(Model.Product.InStock)
+            {
+                <form method="post">  
                     <input type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" asp-for="Quantity"/>
                     <span asp-validation-for="Quantity" class="text-danger"></span>
-                    <button type="submit" class="btn btn-primary w-75">Add To Cart</button>
-                    <button class="btn btn-outline-dark w-75">Buy Now</button>
+                    <input hidden name="ProductId" value="@Model.Product.Id" />
+                    <button asp-page="Details" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add To Cart</button>
+                </form>
+
+                @if(Model.IsAlreadyFavorite)
+                {
+                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Remove From Favorites</button>   
                 }
                 else
                 {
-                    <button disabled class="btn btn-primary w-75">Out Of Stock</button>                    
+                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Add To Favorites</button>    
                 }
+              
+            }
+            else
+            {
+                <button disabled class="btn btn-primary">Out Of Stock</button>       
                 
-            </form>
+                @if(Model.IsAlreadyFavorite)
+                {
+                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Remove From Favorites</button>   
+                }
+                else
+                {
+                    <button class="btn btn-primary" id="addFavorite"><i class="bi bi-heart"></i> Add To Favorites</button>    
+                }
+            }
+                
         </div>
     </div>
 
-    @if (!string.IsNullOrWhiteSpace(tags[0]))
+    @if (Model.Tags != null)
     {
         <div class="row mb-5">
             <div class="col">
                 <h6>Tags</h6>
-                @foreach(var tag in tags)
+                @foreach(var tag in Model.Tags)
                 {
                     <span class="badge bg-secondary">@tag</span>
                 }
@@ -112,4 +130,40 @@
           $(this).tab('show')
         })
     </script>
+    
+    <script>
+        $(document).ready(function() {
+            var cache = '@Model.IsAlreadyFavorite';
+
+            $('#addFavorite').click(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Page("Details","Favorite")',
+                    data: {
+                        id: @Model.ProductId,
+                        favorite: cache
+                    },
+                    success: function(result) {
+                        cache = result;
+                        
+                        if (result == "False") {
+                            
+                            $('#addFavorite').html("Add To Favorites").prepend('<i class="bi bi-heart"></i>');
+                        }
+                        else {
+                            
+                            $('#addFavorite').html("Remove From Favorites").prepend('<i class="bi bi-heart"></i>');
+                        }
+                    },
+                    failure: function() {
+                        alert("failure");
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+            });
+        });
+    </script>
+
 }

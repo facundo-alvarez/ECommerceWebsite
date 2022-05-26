@@ -1,6 +1,5 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Web.Pages.Admin.ProductsManagement
@@ -14,7 +13,7 @@ namespace Web.Pages.Admin.ProductsManagement
             _productService = productService;
         }
 
-        public IEnumerable<Product> Products { get; set; } 
+        public IEnumerable<Product> Products { get; set; }
 
         public void OnGet()
         {

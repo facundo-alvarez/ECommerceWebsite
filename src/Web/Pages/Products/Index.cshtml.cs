@@ -3,7 +3,6 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Web.Utility;
 
 namespace Web.Pages.Products
@@ -52,7 +51,7 @@ namespace Web.Pages.Products
             var categories = _categoryService.GetCategories();
 
 
-            if(Category != "all")
+            if (Category != "all")
             {
                 var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
 

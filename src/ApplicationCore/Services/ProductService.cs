@@ -51,6 +51,7 @@ namespace ApplicationCore.Services
         {
             return _productRepository.GetProducts().Where(c => c.Category.Id == category.Id);
         }
+
     }
 }
 

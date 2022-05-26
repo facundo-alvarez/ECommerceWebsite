@@ -1,7 +1,4 @@
-using ApplicationCore.Entities;
-using ApplicationCore.Services;
 using ApplicationCore.ValueObjects;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Web.Utility;
@@ -14,7 +11,7 @@ namespace Web.Pages.Cart
 
         [BindProperty]
         public int Id { get; set; }
-        
+
 
         public void OnGet()
         {
@@ -22,8 +19,8 @@ namespace Web.Pages.Cart
 
             if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
             {
-                Items = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);   
-            }     
+                Items = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
+            }
         }
 
         public void OnPost()
@@ -32,8 +29,8 @@ namespace Web.Pages.Cart
             {
                 Items = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 Items.Remove(Items.FirstOrDefault(i => i.Product.Id == Id));
-                HttpContext.Session.Set<List<Item>>(SiteConstants.SessionCart, Items);  
-            }  
+                HttpContext.Session.Set<List<Item>>(SiteConstants.SessionCart, Items);
+            }
         }
     }
 }

@@ -4,19 +4,25 @@ using ApplicationCore.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Web.Utility;
 
 namespace Web.Pages.Products
 {
     public class DetailsModel : PageModel
     {
-        private IProductService _productService;
-        private ICategoryService _categoryService;
+        private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFavoriteService _favoriteService;
 
-        public DetailsModel(IProductService productService, ICategoryService categoryService)
+        public DetailsModel(
+            IProductService productService, ICategoryService categoryService, IFavoriteService favoriteService, IHttpContextAccessor httpContextAccessor)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _httpContextAccessor = httpContextAccessor;
+            _favoriteService = favoriteService;
         }
 
         public Product Product { get; set; }
@@ -34,6 +40,12 @@ namespace Web.Pages.Products
 
         public IEnumerable<Product> RelatedProducts { get; set; }
 
+        
+        public List<string> Tags { get; set; }
+        
+        public bool IsAlreadyFavorite { get; set; }
+
+
 
 
         public void OnGet(int id)
@@ -41,9 +53,17 @@ namespace Web.Pages.Products
             Product = _productService.GetProductById(id);
             Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
             RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
+            Tags = Product.Tags.Split(',').ToList();
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userFavorites = _favoriteService.GetUserProducts(userId).Where(p => p.ProductId == id).FirstOrDefault();
+            if(userFavorites != null)
+            {
+                IsAlreadyFavorite = true;
+            }
         }
 
-        public IActionResult OnPost()
+        public void OnPost()
         {
             if (ModelState.IsValid)
             {
@@ -53,7 +73,7 @@ namespace Web.Pages.Products
                 {
                     cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 }
-                if(cartItems.Any(p => p.Product.Id == ProductId))
+                if (cartItems.Any(p => p.Product.Id == ProductId))
                 {
                     var p = cartItems.FirstOrDefault(p => p.Product.Id == ProductId);
                     int index = cartItems.IndexOf(p);
@@ -70,12 +90,40 @@ namespace Web.Pages.Products
 
                 HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
 
-                return RedirectToPage("/Products/Index");
+
+                Product = _productService.GetProductById(ProductId);
+                Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
+                RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
+                Tags = Product.Tags.Split(',').ToList();
+            }
+
+
+        }
+
+        public JsonResult OnGetFavorite(int id, string favorite)
+        {
+            var userId =_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            User_Product up = new User_Product()
+            {
+                UserId = userId,
+                ProductId = id,
+            };
+
+            if(favorite == "False")
+            {
+                _favoriteService.AddToFavorite(up);
+                IsAlreadyFavorite = true;
+                return new JsonResult("True");            
             }
             else
             {
-                return RedirectToPage("Details");
-            }  
+                int favoriteId = _favoriteService.GetId(up);
+                _favoriteService.RemoveFromFavorite(favoriteId);
+                IsAlreadyFavorite = false;
+                return new JsonResult("False");
+            }       
+
         }
     }
 }

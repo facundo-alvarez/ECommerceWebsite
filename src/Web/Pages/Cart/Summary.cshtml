@@ -1,0 +1,130 @@
+﻿@page
+@model Web.Pages.Cart.SummaryModel
+@{
+}
+
+<div class="container">
+    <h2>Checkout</h2>
+    <form method="post" id="payment-form">
+        <div class="row">
+            <div class="col p-5">
+                <h4 class="mb-4">Shipping Details</h4>
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <input class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Country</label>
+                    <input class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">City</label>
+                    <input class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Postal Code</label>
+                    <input type="number" class="form-control" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="row">
+                    <h4>Summary</h4>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <img style="height: 4rem" src="@SiteConstants.ImagePath@item.Product.Image" asp-append-version="true">
+                                            </div>
+                                            <div class="col">
+                                                <h5>@item.Product.Name</h5>
+                                                @if(item.Product.IsOnSale)
+                                                {
+                                                    <p>Price: @item.Product.SalePrice?.ToString("C")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>Price: @item.Product.Price.ToString("C")</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @item.Quantity
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row text-end">
+                    <h5>Total:</h5>
+                    <p>@Model.Total.ToString("C")</p>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-8 border p-3">
+                        <h4>Payment</h4>
+                        <div id="dropin-container"></div>
+                        <input hidden asp-for="@Model.Total" value="@Model.Total" />
+                        <input type="hidden" id="nonce" name="payment_method_nonce"/>
+                        <button type="submit" id="submit-button" class="btn btn-primary col-6">Submit Order</button>
+                    </div>                  
+                </div>
+            </div>
+        </div>
+     </form>
+</div>
+
+
+@section Scripts {
+    <script src="https://js.braintreegateway.com/web/dropin/1.33.1/js/dropin.min.js"></script>
+
+    <script>
+
+        var client_token = '@ViewData["ClientToken"]';
+
+        const form = document.getElementById('payment-form');
+
+        braintree.dropin.create({
+            authorization: client_token,
+            container: '#dropin-container'
+        }, 
+        (error, dropinInstance) => {
+            if (error) console.error(error);
+            
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                
+                dropinInstance.requestPaymentMethod((error, payload) => {
+                    if (error) console.error(error);
+                    
+                    document.getElementById('nonce').value = payload.nonce;
+                    
+                    form.submit();
+            });
+          });
+        });
+    </script>
+}

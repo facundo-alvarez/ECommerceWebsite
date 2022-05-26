@@ -96,9 +96,40 @@ namespace Web.Pages.Products
                 RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
                 Tags = Product.Tags.Split(',').ToList();
             }
-
-
         }
+
+        public void OnGetAddToCart(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                List<Item> cartItems = new List<Item>();
+
+                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+                {
+                    cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
+                }
+
+                if (cartItems.Any(p => p.Product.Id == ProductId))
+                {
+                    var p = cartItems.FirstOrDefault(p => p.Product.Id == ProductId);
+                    int index = cartItems.IndexOf(p);
+                    cartItems[index].Quantity += this.Quantity;
+                }
+                else
+                {
+                    cartItems.Add(new Item()
+                    {
+                        Product = _productService.GetProductById(ProductId),
+                        Quantity = Quantity
+                    });
+                }
+
+                HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
+
+            }
+        }
+
+
 
         public JsonResult OnGetFavorite(int id, string favorite)
         {

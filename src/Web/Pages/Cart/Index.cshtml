@@ -72,7 +72,7 @@
                                         <div class="col">
                                             <form method="post">
                                                 <input hidden asp-for="Id" value="@product.Product.Id">
-                                                <button type="submit" style="font-size: 0.8rem" class="btn-close align-middle ms-5"></button>
+                                                <button type="submit" class=" btn align-middle ms-5" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
                                             </form>
                                         </div>
                                     </div>                                   
@@ -87,7 +87,7 @@
         <div class="col-4 mt-4">
             <h4>Total: @total.ToString("C")</h4>
             <p>Taxes and shipping calculated at check out </p>
-            <buton class="btn btn-primary">Check Out</buton>
+            <a class="btn btn-primary" asp-page="Summary">Check Out</a>
         </div>
     </div>
     }

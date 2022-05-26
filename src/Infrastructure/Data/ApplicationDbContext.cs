@@ -28,5 +28,6 @@ namespace Infrastructure.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<User_Product> User_Products { get; set; }
+        public DbSet<DiscountCode> DiscountCodes { get; set; }
     }
 }

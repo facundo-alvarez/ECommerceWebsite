@@ -1,6 +1,7 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
+using Infrastructure.Braintree;
 using Infrastructure.Data;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.Configure<BraintreeSettings>(builder.Configuration.GetSection("Braintree"));
+
 
 builder.Services.AddTransient<IGenericRepository<Category>, GenericRepository<Category>>();
 builder.Services.AddTransient<IGenericRepository<User_Product>, GenericRepository<User_Product>>();
@@ -48,6 +51,8 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFavoriteService, FavoriteService>();
 
 builder.Services.AddTransient<IPaginationService, PaginationService>();
+
+builder.Services.AddSingleton<IBraintreeGate, BraintreeGate>();
 
 builder.Services.Configure<RouteOptions>(options =>
 {

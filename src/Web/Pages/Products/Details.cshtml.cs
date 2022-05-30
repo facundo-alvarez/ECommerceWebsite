@@ -27,15 +27,6 @@ namespace Web.Pages.Products
 
         public Product Product { get; set; }
 
-        [BindProperty]
-        [Required]
-        [Range(1, 50)]
-        public int Quantity { get; set; } = 1;
-
-        //[BindProperty]
-        //public int ProductId { get; set; }
-
-
         public Category Category { get; set; }
 
         public IEnumerable<Product> RelatedProducts { get; set; }
@@ -44,17 +35,27 @@ namespace Web.Pages.Products
         
         public bool IsAlreadyFavorite { get; set; }
 
+        public Item Item { get; set; }
+
 
 
 
         public void OnGet(int id)
         {
+            Item = new();
+
             Product = _productService.GetProductById(id);
             Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
             RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
             Tags = Product.Tags.Split(',').ToList();
 
-            if(HttpContext.User.Identity.IsAuthenticated)
+
+            if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+            {
+                Item = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).FirstOrDefault(p => p.Product.Id == id); ;
+            }
+
+            if (HttpContext.User.Identity.IsAuthenticated)
             {
                 var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var userFavorites = _favoriteService.GetUserProducts(userId).Where(p => p.ProductId == id).FirstOrDefault();
@@ -66,43 +67,54 @@ namespace Web.Pages.Products
         }
 
 
-        public void OnGetAddToCart(int id, int quantity, int category)
+        public JsonResult OnGetAddToCart(int id, int quantity, int category)
         {
-            int numberOfItems = 0;
+
+            if (quantity > 20)
+                quantity = 20;
+
+            Item prod = new Item();
+
             Product = _productService.GetProductById(id);
-            if (ModelState.IsValid)
+
+            List<Item> cartItems = new List<Item>();
+
+            if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
             {
-                List<Item> cartItems = new List<Item>();
+                cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
+            }
 
-                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+            if (cartItems.Any(p => p.Product.Id == id))
+            {
+                prod = cartItems.FirstOrDefault(p => p.Product.Id == id);
+                if(prod.Quantity + quantity > 20)
                 {
-                    cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-                }
-
-                if (cartItems.Any(p => p.Product.Id == id))
-                {
-                    var p = cartItems.FirstOrDefault(p => p.Product.Id == id);
-                    int index = cartItems.IndexOf(p);
-                    cartItems[index].Quantity += quantity;
-                    numberOfItems = cartItems.Count();
+                    prod.Quantity = 20;
                 }
                 else
                 {
-                    cartItems.Add(new Item()
-                    {
-                        Product = _productService.GetProductById(id),
-                        Quantity = quantity
-                    });
-                    numberOfItems = 1;
+                    prod.Quantity += quantity;
                 }
-
-                HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
-
-                Product = _productService.GetProductById(id);
-                Category = _categoryService.GetCategories().Where(c => c.Id == category).FirstOrDefault();
-                RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
-                Tags = Product.Tags.Split(',').ToList();
             }
+            else
+            {
+                cartItems.Add(new Item()
+                {
+                    Product = _productService.GetProductById(id),
+                    Quantity = quantity
+                });
+                prod.Quantity = quantity;
+            }
+
+            HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
+
+            Product = _productService.GetProductById(id);
+            Category = _categoryService.GetCategories().Where(c => c.Id == category).FirstOrDefault();
+            RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
+            Tags = Product.Tags.Split(',').ToList();
+
+            return new JsonResult(prod.Quantity);
+
         }
 
 

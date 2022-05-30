@@ -79,10 +79,18 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="row text-end">
-                    <h5>Total:</h5>
-                    <p>@Model.Total.ToString("C")</p>
+                <div class="row mb-4">
+                    <div class="col-4">
+                        <h5>Discount Code</h5>
+                        <input id="discountCode" class="form-control mb-2" />
+                        <button id="discountValidate" class="btn btn-primary">Validate</button>
+                    </div> 
+                    <div class="col">
+                        <h5>Total:</h5>
+                        <p>@Model.Total.ToString("C")</p>
+                    </div>
                 </div>
+
                 <div class="row justify-content-center">
                     <div class="col-8 border p-3">
                         <h4>Payment</h4>
@@ -127,4 +135,5 @@
           });
         });
     </script>
+
 }

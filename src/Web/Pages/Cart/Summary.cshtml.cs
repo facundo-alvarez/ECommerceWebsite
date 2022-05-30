@@ -76,5 +76,10 @@ namespace Web.Pages.Cart
 
             return RedirectToPage("/Order/Error");
         }
+
+        public void OnGetValidate()
+        {
+
+        }
     }
 }

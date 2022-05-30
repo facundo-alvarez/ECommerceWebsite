@@ -157,9 +157,6 @@
                         }
 
                     },
-                    failure: function() {
-                        alert("failure");
-                    },
                     error: function() {
                         alert("error");
                     }
@@ -180,10 +177,7 @@
                 },
                 success: function(result) {
                     $('#addToCart').html("Added To Cart").prepend('<i class="bi bi-cart-plus"></i>');
-                    $.get('@Url.Page("Details","PartialCart")', function(data) {
-                        $('#cartMenu').replaceWith(data);
-                    })
-
+                    $('#cartMenu').load('?handler=PartialCart');
                 },
                 failure: function() {
                     alert("failure");
@@ -191,7 +185,6 @@
                 error: function() {
                     alert("error");
                 }
-
             });
         });
     </script>

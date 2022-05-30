@@ -1,8 +1,14 @@
 ﻿@page
+@using ApplicationCore.ValueObjects
+@using Microsoft.AspNetCore.Http
+@using Web.Pages.Shared
+@using Web.Utility
 @model Web.Pages.Cart.IndexModel
+
 @{
     decimal total = 0;
 }
+
 
 <div class="container-lg">
     <div class="row">
@@ -23,76 +29,39 @@
             <a asp-page="/Products/Index" asp-route-category="all"><p>Continue Shopping</p></a>
         </div>
     </div>
+    <div id="cartList">
 
-    @if(Model.Items.Count == 0 || Model.Items == null)
-    {
-        <div class="row">
-            <div class="col text-center">
-                <h3>Cart is empty</h3>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(Model.Items != null)
-                    {
-                        foreach(var product in Model.Items)
-                        {
-                            var price = product.Product.Price;
-                            var quantity = @product.Quantity;
-                            var subtotal = price * quantity;
-                            total += subtotal;
-
-                            <tr>
-                                <td class="align-middle">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img style="height: 4rem" src="@SiteConstants.ImagePath@product.Product.Image" asp-append-version="true">
-                                        </div>
-                                        <div class="col">
-                                            <h5>@product.Product.Name</h5>
-                                            <p>@product.Product.Price.ToString("C")</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="align-middle">@quantity</td>
-                                <td class="align-middle">
-                                    <div class="row">
-                                        <div class="col-8">@subtotal.ToString("C")</div>
-                                        <div class="col">
-                                            <form method="post">
-                                                <input hidden asp-for="Id" value="@product.Product.Id">
-                                                <button type="submit" class=" btn align-middle ms-5" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
-                                            </form>
-                                        </div>
-                                    </div>                                   
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>     
-    <div class="row border-top justify-content-end">
-        <div class="col-4 mt-4">
-            <h4>Total: @total.ToString("C")</h4>
-            <p>Taxes and shipping calculated at check out </p>
-            <a class="btn btn-primary" asp-page="Summary">Check Out</a>
-        </div>
+        <partial name="_CartListPartial" model="@Model.Items" />
+        
     </div>
-    }
 </div>
+        
 
 
+@section Scripts {
 
+    <script>
 
+        $(document).on('click', '.deleteButton', function() {
+
+            var productId = $(this).attr('id');
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Index","Delete")',
+                data: {
+                    id: productId
+                },
+                success: function(response) {
+                    $('#cartList').load('Index?handler=PartialListCart');
+                    $('#cartMenu').load('Index?handler=PartialCart');                   
+                },
+                error: function() {
+                    alert('Error');
+                }
+            });
+
+        });
+
+    </script>
+}

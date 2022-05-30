@@ -52,15 +52,76 @@
                 data: {
                     id: productId
                 },
-                success: function(response) {
+                success: function() {
+
                     $('#cartList').load('Index?handler=PartialListCart');
-                    $('#cartMenu').load('Index?handler=PartialCart');                   
+                    $('#cartMenu').load('Index?handler=PartialCart');    
+                    
                 },
                 error: function() {
+
                     alert('Error');
+
                 }
             });
+        });
 
+    </script>
+
+    <script>
+
+        $(document).on('click', '.removeQuantity', function() {
+
+            var productId = $(this).attr('id');
+            var prodQuantity = $(this).attr('quantity');
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Index","RemoveQuantity")',
+                data: {
+                    id: productId,
+                    quantity: prodQuantity
+                },
+                success: function() {
+                    
+                    $('#cartList').load('Index?handler=PartialListCart');
+                 
+                },
+                error: function() {
+
+                    alert('Error');
+
+                }
+            });  
+        });
+
+    </script>
+
+    <script>
+
+        $(document).on('click', '.addQuantity', function() {
+
+            var productId = $(this).attr('id');
+            var prodQuantity = $(this).attr('quantity');
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Index","AddQuantity")',
+                data: {
+                    id: productId,
+                    quantity: prodQuantity
+                },
+                success: function() {
+                    
+                    $('#cartList').load('Index?handler=PartialListCart');
+                 
+                },
+                error: function() {
+
+                    alert('Error');
+
+                }
+            });  
         });
 
     </script>

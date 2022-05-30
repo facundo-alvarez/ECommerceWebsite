@@ -1,0 +1,8 @@
+﻿@using ApplicationCore.ValueObjects
+@model Item
+
+<div class="input-group mb-3 w-50">
+        <button id="@Model.Product.Id" quantity="@Model.Quantity" class="input-group-text removeQuantity"><i class="bi bi-dash-lg"></i></button>
+        <span class="form-control inputQuantity">@Model.Quantity</span>
+        <button id="@Model.Product.Id" quantity="@Model.Quantity" class="input-group-text addQuantity"><i class="bi bi-plus-lg"></i></button>
+</div>

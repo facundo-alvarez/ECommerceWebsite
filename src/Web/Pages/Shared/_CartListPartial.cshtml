@@ -2,7 +2,7 @@
 @model List<Item>
 @{
     decimal total = 0;
-    Layout = null;
+    Layout = null; 
 }
 
 
@@ -47,9 +47,8 @@ else
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">
-                                @quantity
-                                
+                            <td class="align-middle" id="cartQuantityPartial">
+                                <partial name="_CartQuantityPartial" model="@product"></partial>
                             </td>
                             <td class="align-middle">
                                 <div class="row">

@@ -1,10 +1,9 @@
 ﻿@using ApplicationCore.ValueObjects
-@model List<Item>
+
+@model List<CartItem>
 @{
     decimal total = 0;
-    Layout = null; 
 }
-
 
 @if(Model.Count == 0 || Model == null)
 {
@@ -28,33 +27,30 @@ else
             <tbody>
                 @if(Model != null)
                 {
-                    foreach(var product in Model)
+                    foreach(var cartItem in Model)
                     {
-                        var price = product.Product.Price;
-                        var quantity = @product.Quantity;
-                        var subtotal = price * quantity;
-                        total += subtotal;
+                        total += cartItem.Product.Price * cartItem.Quantity;
 
                         <tr>
                             <td class="align-middle">
                                 <div class="row">
                                     <div class="col-3">
-                                        <img style="height: 4rem" src="@SiteConstants.ImagePath@product.Product.Image" asp-append-version="true">
+                                        <img style="height: 4rem" src="@SiteConstants.ImagePath@cartItem.Product.Image" asp-append-version="true">
                                     </div>
                                     <div class="col">
-                                        <h5>@product.Product.Name</h5>
-                                        <p>@product.Product.Price.ToString("C")</p>
+                                        <h5>@cartItem.Product.Name</h5>
+                                        <p>@cartItem.Product.Price.ToString("C")</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="align-middle" id="cartQuantityPartial">
-                                <partial name="_CartQuantityPartial" model="@product"></partial>
+                                <partial name="_CartQuantityPartial" model="@cartItem"></partial>
                             </td>
                             <td class="align-middle">
                                 <div class="row">
-                                    <div class="col-8">@subtotal.ToString("C")</div>
+                                    <div class="col-8">@cartItem.Total.ToString("C")</div>
                                     <div class="col">
-                                        <button id="@product.Product.Id" class="btn align-middle ms-5 deleteButton" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
+                                        <button id="@cartItem.Product.Id" class="btn align-middle ms-5 deleteButton" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>                                   
                             </td>
@@ -68,7 +64,17 @@ else
         <div class="col-4 mt-4">
             <h4>Total: @total.ToString("C")</h4>
             <p>Taxes and shipping calculated at check out </p>
-            <a class="btn btn-primary" asp-page="Summary">Check Out</a>
+            @if(User.Identity.IsAuthenticated)
+            {
+                <form method="post">
+                    <button class="btn btn-primary">Check Out</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">Loggin To Checkout</a>
+            }
+
         </div>
     </div>
 }

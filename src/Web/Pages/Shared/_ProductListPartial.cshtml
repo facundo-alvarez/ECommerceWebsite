@@ -1,38 +1,36 @@
-﻿@model IEnumerable<ApplicationCore.Entities.Product>
+﻿@using ApplicationCore.Entities
+@model List<Product>
 
 @foreach(var product in Model)
 {
     <div class="col">
-        <form method="post">
-            <input hidden name="Product.Id" value="@product.Id">
-            <div class="card mx-2 my-4 border-1" style="width: 12rem;">
-                <a asp-page="Details" asp-route-id="@product.Id">
-                    <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+        <div class="card mx-2 my-4 border-1" style="width: 12rem;">
+            <a asp-page="Details" asp-route-id="@product.Id">
+                <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+            </a>
+            <div class="card-body">
+                @if(product.IsOnSale)
+                {
+                    <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
+                    <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
+                }
+                else
+                {
+                    <h6 class="card-text">@product.Price.ToString("C")</h6>
+                }
+                <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
+                    <h5 class="card-title">@product.Name</h5>
                 </a>
-                <div class="card-body">
-                    @if(product.IsOnSale)
-                    {
-                        <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
-                        <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
-                    }
-                    else
-                    {
-                        <h6 class="card-text">@product.Price.ToString("C")</h6>
-                    }
-                    <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
-                        <h5 class="card-title">@product.Name</h5>
-                    </a>
-                    @if(!product.InStock)
-                    {
-                        <button disabled class="btn btn-primary w-100">Out Of Stock</button>
-                    }
-                    else
-                    {
-                        <button type="submit" class="btn btn-primary w-100">Add To Cart </button>
-                    }
-                </div>
-            </div> 
-        </form>
+                @if(!product.InStock)
+                {
+                    <button disabled class="btn btn-primary w-100">Out Of Stock</button>
+                }
+                else
+                {
+                    <button prodid="@product.Id" id="addToCart" class="btn btn-primary w-100">Add To Cart </button>
+                }
+            </div>
+        </div> 
     </div>
 }
 

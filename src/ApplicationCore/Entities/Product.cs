@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Entities
@@ -37,5 +36,7 @@ namespace ApplicationCore.Entities
 
 
         public ICollection<User_Product> User_Product { get; set; }
+
+        public ICollection<Order_Product> Order_Product { get; set; }
     }
 }

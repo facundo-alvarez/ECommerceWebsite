@@ -1,26 +1,8 @@
-﻿@inject IHttpContextAccessor httpContextAccessor
+﻿@model int
 
-@using ApplicationCore.ValueObjects
-@using Microsoft.AspNetCore.Http
-@using Web.Utility
-@{
-    Layout = null;
-}
-
-@if(httpContextAccessor.HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null)
-{
-    var count = httpContextAccessor.HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count();
- 
-    <a asp-page="/Cart/Index" class="nav-link">
-                                      
-        <i class="bi bi-cart"></i>
-        <span class="position-absolute translate-middle badge rounded-pill bg-danger">
-            @count
-        </span>
-    </a>
-                                
-}
-else
-{
-    <a asp-page="/Cart/Index" class="nav-link"><i class="bi bi-bag">0</i></a>
-}
+<a asp-page="/Cart/Index" class="nav-link">                              
+    <i class="bi bi-cart"></i>
+    <span class="position-absolute translate-middle badge rounded-pill bg-danger">
+        @Model
+    </span>
+</a>         

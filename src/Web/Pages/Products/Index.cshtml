@@ -69,19 +69,38 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.unobtrusive-ajax.js"></script>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
-            var options = {
 
-        
-            }
             var toastHTMLElement = document.getElementById("MyToast")
             var toastElement = new bootstrap.Toast(toastHTMLElement);
 
             toastElement.show();
 
         }, false);  
+    </script>
 
+     <script>
+        $(document).on('click', '#addToCart', function() {
+
+            var productId = $(this).attr('prodid');
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Index","AddToCart")',
+                data: {
+                    prodId: productId
+                },
+                success: function() {
+                    $('#cartMenu').load('?handler=PartialCart'); 
+                },
+                failure: function() {
+                    alert("failure");
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+        });
     </script>
 
 }

@@ -10,12 +10,14 @@ using Newtonsoft.Json.Serialization;
 using Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders()
     .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -25,11 +27,13 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole(SiteConstants.AdminRole));
+    options.AddPolicy("CustomerPolicy", policy => policy.RequireRole(SiteConstants.CustomerRole));
 });
 
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy");
+    options.Conventions.AuthorizePage("/Cart/Summary", "CustomerPolicy");
 });
 
 builder.Services.AddSession(options =>
@@ -44,11 +48,19 @@ builder.Services.Configure<BraintreeSettings>(builder.Configuration.GetSection("
 
 builder.Services.AddTransient<IGenericRepository<Category>, GenericRepository<Category>>();
 builder.Services.AddTransient<IGenericRepository<User_Product>, GenericRepository<User_Product>>();
+builder.Services.AddTransient<IGenericRepository<Order_Product>, GenericRepository<Order_Product>>();
+builder.Services.AddTransient<IGenericRepository<Order>, GenericRepository<Order>>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<IDiscountRepository, DiscountRepository>();
+
 
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IFavoriteService, FavoriteService>();
+builder.Services.AddTransient<IDiscountService, DiscountService>();
+builder.Services.AddTransient<IOrderProductService, OrderProductService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
+
 
 builder.Services.AddTransient<IPaginationService, PaginationService>();
 

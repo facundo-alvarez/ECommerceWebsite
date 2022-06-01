@@ -34,17 +34,8 @@
             @if(Model.Product.InStock)
             {
                 <input id="quantityInput" type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" value="1"/>
-
-                @if(Model.Item.Quantity >= 20)
-                {
-                    <button disabled id="addToCart" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Maximum Reached</button>
-                }
-                else
-                {
-                     <button id="addToCart" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add To Cart</button>
-                }
+                <button id="addToCart" prodid="@Model.Product.Id" class="btn btn-primary addToCart"><i class="bi bi-cart-plus"></i> Add To Cart</button>
                 
-
                 @if(Model.IsAlreadyFavorite)
                 {
                     <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Remove From Favorites</button>   
@@ -113,13 +104,42 @@
     <div class="row">
         <div class="col">
             <div class="d-flex justify-content-center">
-                <partial name="_ProductListPartial" model="Model.RelatedProducts" />
+                @foreach(var product in Model.RelatedProducts)
+                {
+                    <div class="col">
+                        <div class="card mx-2 my-4 border-1" style="width: 12rem;">
+                            <a asp-page="Details" asp-route-id="@product.Id">
+                                <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+                            </a>
+                            <div class="card-body">
+                                @if(product.IsOnSale)
+                                {
+                                    <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
+                                    <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
+                                }
+                                else
+                                {
+                                    <h6 class="card-text">@product.Price.ToString("C")</h6>
+                                }
+                                <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
+                                    <h5 class="card-title">@product.Name</h5>
+                                </a>
+                                @if(!product.InStock)
+                                {
+                                    <button disabled class="btn btn-primary w-100">Out Of Stock</button>
+                                }
+                                else
+                                {
+                                    <button relatedid="@product.Id" class="btn btn-primary addToCartRelated"><i class="bi bi-cart-plus"></i> Add To Cart</button>
+                                }
+                            </div>
+                        </div> 
+                        
+                    </div>
+                }
             </div>
-            
         </div>
-       
     </div>
-   
 </div>
 
 
@@ -171,30 +191,20 @@
     </script>
 
     <script>
-        $('#addToCart').click(function() {
+        $(document).on('click', '#addToCart', function() {
 
-            var q = $('#quantityInput').val()
+            var productQuantity = $('#quantityInput').val();
+            var productId = $(this).attr('prodid');
 
             $.ajax({
                 type: 'GET',
                 url: '@Url.Page("Details","AddToCart")',
                 data: {
-                    id: @Model.Product.Id,
-                    quantity: q,
-                    category: @Model.Category.Id
+                    prodId: productId,
+                    quantity: productQuantity
                 },
-                success: function(result) {
-                    $('#cartMenu').load('?handler=PartialCart');
-                    
-                    if (result < 20) {
-
-                        $('#addToCart').html("Added To Cart").prepend('<i class="bi bi-cart-plus"></i>');
-
-                    }
-                    else if (result == 20) {
-
-                        $('#addToCart').html("Maximum Reached").prepend('<i class="bi bi-cart-plus"></i>').prop('disabled', true);
-                    }
+                success: function() {
+                    $('#cartMenu').load('?handler=PartialCart'); 
                 },
                 failure: function() {
                     alert("failure");
@@ -206,4 +216,29 @@
         });
     </script>
 
+    <script>
+        $(document).on('click', '.addToCartRelated', function() {
+
+            var productQuantity = 1;
+            var productId = $(this).attr('relatedid');
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Details","AddToCart")',
+                data: {
+                    prodId: productId,
+                    quantity: productQuantity
+                },
+                success: function() {
+                    $('#cartMenu').load('?handler=PartialCart'); 
+                },
+                failure: function() {
+                    alert("failure");
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+        });
+    </script>
 }

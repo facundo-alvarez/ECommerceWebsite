@@ -1,7 +1,41 @@
-﻿
+﻿@using ApplicationCore.Interfaces
 @using ApplicationCore.ValueObjects
+@using System.Security.Claims
 @using Web.Utility
 @inject IHttpContextAccessor httpContextAccessor
+@inject IOrderProductService orderProductService
+@inject IOrderService orderService
+
+@{
+    int number = 0;
+
+    if(User.Identity.IsAuthenticated)
+    {
+        var userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        ApplicationCore.Entities.Order Order = orderService.GetUserCurrentOrder(userId);
+
+        if (Order != null)
+        {
+            number = orderProductService.GetOrderCurrentProducts(Order.Id).Count();
+        }
+        else
+        {
+            number = 0;
+        }
+    }
+    else
+    {
+        if (httpContextAccessor.HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && httpContextAccessor.HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+        {
+            number = httpContextAccessor.HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count();
+        }
+        else
+            number = 0;
+    }
+}
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,14 +78,14 @@
                         </li>
                         <li>
                             <div id="cartMenu">
-                                <partial name="_CartPartial" /> 
+                                <partial name="_CartPartial" model="@number" /> 
                             </div>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             if (User.IsInRole(SiteConstants.AdminRole))
                             {
-                                    <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link text-dark" asp-page="/Admin/Index">Admin Panel</a>
                                 </li>  
                             }

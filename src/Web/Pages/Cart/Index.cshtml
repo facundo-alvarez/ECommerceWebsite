@@ -3,11 +3,9 @@
 @using Microsoft.AspNetCore.Http
 @using Web.Pages.Shared
 @using Web.Utility
+
 @model Web.Pages.Cart.IndexModel
 
-@{
-    decimal total = 0;
-}
 
 
 <div class="container-lg">
@@ -31,7 +29,7 @@
     </div>
     <div id="cartList">
 
-        <partial name="_CartListPartial" model="@Model.Items" />
+        <partial name="_CartListPartial" model="@Model.CartItems" />
         
     </div>
 </div>
@@ -122,6 +120,37 @@
 
                 }
             });  
+        });
+
+    </script>
+
+     <script>
+
+        $('#discountValidate').on('click', function() {
+
+            var discountCode = $('#discountCode').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Index","Discount")',
+                data: {
+                    code: discountCode
+                },
+                success: function(result) {
+                    if (result == "Updated") {
+
+                        alert(newTotal);
+
+                    }
+                    else if (result == "Invalid") {
+                        alert(result);
+                    }
+
+                },
+                error: function() {
+                    alert('Error');
+                }
+            });
         });
 
     </script>

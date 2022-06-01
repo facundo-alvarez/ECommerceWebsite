@@ -29,7 +29,7 @@ namespace Infrastructure.Repository
 
         public T Get(int id)
         {
-            throw new NotImplementedException();
+            return _table.Find(id);
         }
 
         public void Insert(T entity)
@@ -44,7 +44,7 @@ namespace Infrastructure.Repository
 
         public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _db.Update(entity);
         }
     }
 }

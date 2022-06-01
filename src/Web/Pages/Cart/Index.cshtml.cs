@@ -110,6 +110,9 @@ namespace Web.Pages.Cart
                 var order = _orderService.GetUserCurrentOrder(userId);
                 _orderProductService.RemoveProductFormCurrentOrder(order.Id, id);
 
+                order.DiscountCode = null;
+                order.HasCupon = false;
+
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
                 order.Total = order.SubTotal;
 
@@ -157,8 +160,12 @@ namespace Web.Pages.Cart
 
                 _orderProductService.RemoveProductQuantity(order.Id, id, 1);
 
+                order.DiscountCode = null;
+                order.HasCupon = false;
+
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
                 order.Total = order.SubTotal;
+
 
                 _orderService.UpdateOrder(order);
 
@@ -190,6 +197,9 @@ namespace Web.Pages.Cart
                 var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
 
                 _orderProductService.AddProductQuantity(order.Id, id, 1);
+
+                order.DiscountCode = null;
+                order.HasCupon = false;
 
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
                 order.Total = order.SubTotal;

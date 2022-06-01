@@ -7,93 +7,103 @@
 
 <div class="container">
     <h2>Checkout</h2>
-    <form method="post" id="payment-form">
-        <div class="row">
-            <div class="col p-5">
-                <h4 class="mb-4">Shipping Details</h4>
-                <div class="mb-3">
-                    <label class="form-label">Name</label>
-                    <input class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Phone</label>
-                    <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Address</label>
-                    <input class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Country</label>
-                    <input class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">City</label>
-                    <input class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Postal Code</label>
-                    <input type="number" class="form-control" />
-                </div>
+    <div class="row">
+        <div class="col p-5">
+            <h4 class="mb-4">Shipping Details</h4>
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input class="form-control" />
             </div>
-            <div class="col">
-                <div class="row">
-                    <h4>Summary</h4>
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <input class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Country</label>
+                <input class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">City</label>
+                <input class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Postal Code</label>
+                <input type="number" class="form-control" />
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <h4>Summary</h4>
                     
-                    <table class="table">
-                        <thead>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var item in Model.CartItems)
+                        {
+                            total += item.Product.Price * item.Quantity;
                             <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var item in Model.CartItems)
-                            {
-                                total += item.Product.Price * item.Quantity;
-                                <tr>
-                                    <td>
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <img style="height: 4rem" src="@SiteConstants.ImagePath@item.Product.Image" asp-append-version="true">
-                                            </div>
-                                            <div class="col">
-                                                <h5>@item.Product.Name</h5>
-                                                @if(item.Product.IsOnSale)
-                                                {
-                                                    <p>Price: @item.Product.SalePrice?.ToString("C")</p>
-                                                }
-                                                else
-                                                {
-                                                    <p>Price: @item.Product.Price.ToString("C")</p>
-                                                }
-                                            </div>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <img style="height: 4rem" src="@SiteConstants.ImagePath@item.Product.Image" asp-append-version="true">
                                         </div>
-                                    </td>
-                                    <td>
-                                        @item.Quantity
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-4">
-                        <h5>Discount Code</h5>
+                                        <div class="col">
+                                            <h5>@item.Product.Name</h5>
+                                            @if(item.Product.IsOnSale)
+                                            {
+                                                <p>Price: @item.Product.SalePrice?.ToString("C")</p>
+                                            }
+                                            else
+                                            {
+                                                <p>Price: @item.Product.Price.ToString("C")</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @item.Quantity
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mb-4">
+                <div class="col-4">
+                    <h5>Discount Code</h5>
+                    @if(Model.Order.HasCupon)
+                    {
+                        <input id="discountCode" disabled class="form-control mb-2" />
+                        <button id="discountValidate" disabled class="btn btn-primary">Remove</button>
+                    }
+                    else
+                    {
                         <input id="discountCode" class="form-control mb-2" />
                         <button id="discountValidate" class="btn btn-primary">Validate</button>
-                    </div> 
-                    <div class="col">
-                        <h5>Total:</h5>
-                        <p>@total.ToString("C")</p>
+                    }
+                </div> 
+                <div class="col">
+                    <div id="discountCodeTag"></div>
+                    <div id="totalPartial">
+                        <partial name="_OrderTotalPartial" model="@Model.Order" />
                     </div>
                 </div>
+            </div>
 
+            <form method="post" id="payment-form">
                 <div class="row justify-content-center">
                     <div class="col-8 border p-3">
                         <h4>Payment</h4>
@@ -105,9 +115,9 @@
                         <button type="submit" id="submit-button" class="btn btn-primary col-6">Submit Order</button>
                     </div>                  
                 </div>
-            </div>
+            </form>
         </div>
-     </form>
+    </div>
 </div>
 
 
@@ -123,56 +133,80 @@
         braintree.dropin.create({
             authorization: client_token,
             container: '#dropin-container'
-        }, 
+        },
         (error, dropinInstance) => {
             if (error) console.error(error);
-            
+
             form.addEventListener('submit', event => {
                 event.preventDefault();
-                
+
                 dropinInstance.requestPaymentMethod((error, payload) => {
                     if (error) console.error(error);
-                    
+
                     document.getElementById('nonce').value = payload.nonce;
-                    
+
                     form.submit();
+                });
             });
-          });
         });
 
     </script>
 
     <script>
 
-        $('#discountValidate').on('click', function() {
-
-            var discountCode = $('#discountCode').val();
-            var total = @total.ToString(new CultureInfo("en-US"));
+        $(document).on('click', '#discountValidate', function() {
+            var cache = '@Model.Order.HasCupon';
+            var code = $('#discountCode').val();
 
             $.ajax({
                 type: 'GET',
                 url: '@Url.Page("Summary","Discount")',
                 data: {
-                    code: discountCode,
-                    total: parseFloat(total).toFixed(2)
+                    prodCode: code
                 },
                 success: function(result) {
-                    if (result == "Updated") {
+                    cache = result;
+                    
+                    if (result == "True") {
 
-                        alert(newTotal);
-
+                        $('#totalPartial').load('?handler=PartialTotal');
+                        $('#discountCode').prop('disabled', true);
+                        $('#discountValidate').prop('disabled', true);
                     }
-                    else if (result == "Invalid") {
-                        alert(result);
+                    else if (result == "False") {
+                        alert("Invalid Cupon");
                     }
-
                 },
                 error: function() {
+
                     alert('Error');
+
                 }
             });
         });
 
     </script>
+
+    <script>
+
+        $(document).on('click', '#removeCupon', function() {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Page("Summary","RemoveDiscount")',
+                success: function() { 
+                    $('#totalPartial').load('?handler=PartialTotal');
+                    $('#discountCode').prop('disabled', false);
+                    $('#discountValidate').prop('disabled', false);
+                },
+                error: function() {
+
+                    alert('Error');
+
+                }
+            });
+        });
+
+    </script>
+
 
 }

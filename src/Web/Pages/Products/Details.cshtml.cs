@@ -81,6 +81,9 @@ namespace Web.Pages.Products
                     order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
                     order.Total = order.SubTotal;
 
+                    order.HasCupon = false;
+                    order.DiscountCode = null;
+
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
                 }

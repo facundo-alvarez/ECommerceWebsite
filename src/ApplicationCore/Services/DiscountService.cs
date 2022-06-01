@@ -30,16 +30,29 @@ namespace ApplicationCore.Services
                 }
         }
 
+        public DiscountCode GetDiscountByCode(string code)
+        {
+            return _discountRepository.GetDiscoutCode(code);
+        }
+
+        public string GetDiscountName(string code)
+        {
+            return _discountRepository.GetDiscoutCode(code).Name;
+        }
+
         public bool IsValid(string code)
         {
             var discount = _discountRepository.GetDiscoutCode(code);
 
-            if (discount == null)
+            if (discount != null)
             {
-                return false;
+                if(discount.CreatedDate > DateTime.Today || discount.ValidUntil < DateTime.Today)
+                    return false;
+
+                return true;
             }
             else
-                return true;
+                return false;
         }
     }
 }

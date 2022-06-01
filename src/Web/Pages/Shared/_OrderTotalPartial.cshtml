@@ -1,0 +1,24 @@
+﻿@model ApplicationCore.Entities.Order   
+
+
+@if (Model.HasCupon)
+{
+    <div class="row">
+        <div class="col">
+            <h6>Subtotal: </h6>
+            <del>@Model.SubTotal</del>
+
+            <h5>Total: </h5>
+            <p>@Model.Total</p>
+        </div>
+        <div class="col">
+            <p>Code: @Model.HasCupon </p>
+            <button id="removeCupon" class="btn btn-danger">Remove Cupon</button>
+        </div>
+    </div> 
+}
+else
+{
+    <h5>Total: </h5>
+    <p>@Model.Total</p>
+}

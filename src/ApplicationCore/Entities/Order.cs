@@ -10,11 +10,9 @@ namespace ApplicationCore.Entities
 
         public IEnumerable<Order_Product> Order_Product { get; set; } = new List<Order_Product>();
 
-        //public bool HasCupon { get; set; } = false;
+        public bool HasCupon { get; set; } = false;
 
-        //public int DiscountCodeId { get; set; } = 0;
-
-        //public DiscountCode? DiscountCode { get; set; }
+        public DiscountCode? DiscountCode { get; set; } = null;
 
         public decimal SubTotal { get; set; } = 0;
 

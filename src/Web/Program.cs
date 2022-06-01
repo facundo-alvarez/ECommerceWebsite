@@ -4,6 +4,7 @@ using ApplicationCore.Services;
 using Infrastructure.Braintree;
 using Infrastructure.Data;
 using Infrastructure.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
@@ -34,6 +35,7 @@ builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy");
     options.Conventions.AuthorizePage("/Cart/Summary", "CustomerPolicy");
+    options.Conventions.AuthorizePage("/Favorites/Index", "CustomerPolicy");
 });
 
 builder.Services.AddSession(options =>

@@ -3,6 +3,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.ValueObjects;
 using Braintree;
 using Infrastructure.Braintree;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Globalization;
@@ -35,77 +36,21 @@ namespace Web.Pages.Cart
             _orderService = orderService;
         }
 
-
-        public ApplicationCore.Entities.Order Order { get; set; }
-
-        public List<Item> Items { get; set; }
-
         public List<CartItem> CartItems { get; set; }
 
-        public List<Product> Products { get; set; }
+        public ApplicationCore.Entities.Order Order { get; set; }
 
 
         public void OnGet()
         {
-            Items = new ();
+            List<Item> Items = new ();
             CartItems = new();
 
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
             Order = _orderService.GetUserCurrentOrder(userId);
+            _orderProductService.GetOrderCurrentProducts(Order.Id);
 
-            if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
-            {
-                Items = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-            }
-
-
-            if (Order == null)
-            {
-                Order = new();
-
-                Order.UserId = userId;
-
-                _orderService.InsertOrder(Order);
-                _orderService.SaveOrder(Order);
-
-                Items = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-                _orderProductService.SetOrderProducts(Items, Order.Id);
-
-                Order.SubTotal = _orderProductService.GetOrderSubtotal(Order.Id);
-
-                //if(Order.HasCupon)
-                //{
-                //    Order.Total = _discountService.GetDiscount(Order.DiscountCode.Code, Order.SubTotal);
-                //}
-                //else
-                //{
-                //    Order.Total = Order.SubTotal;
-                //}
-
-                Order.Total = Order.SubTotal;
-
-                Order.OrderStatus = "In process";
-
-                _orderService.UpdateOrder(Order);
-                _orderService.SaveOrder(Order);
-
-            }
-            else
-            {
-                Order.Order_Product = _orderProductService.GetOrderCurrentProducts(Order.Id);
-
-                foreach(var product in Order.Order_Product)
-                {
-                    Items.Add(new Item()
-                    {
-                        ProductId = product.ProductId,
-                        Quantity = product.Quantity
-                    });
-                }
-            }
-
-            foreach(var item in Items)
+            foreach(var item in Order.Order_Product)
             {
                 CartItems.Add(new CartItem()
                 {
@@ -113,8 +58,6 @@ namespace Web.Pages.Cart
                     Quantity = item.Quantity
                 });
             }
-
-           
 
             var gateway = _braintreeGate.GetGeteway();
             var clientToken = gateway.ClientToken.Generate();
@@ -124,6 +67,9 @@ namespace Web.Pages.Cart
 
         public IActionResult OnPost(IFormCollection collection)
         {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Order = _orderService.GetUserCurrentOrder(userId);
+
             string nonceFromTheClient = collection["payment_method_nonce"];
 
             var request = new TransactionRequest
@@ -153,16 +99,71 @@ namespace Web.Pages.Cart
             return RedirectToPage("/Order/Error");
         }
 
-        public JsonResult OnGetDiscount(string code)
+        public JsonResult OnGetDiscount(string prodCode)
         {
-            if (_discountService.IsValid(code))
+            if (_discountService.IsValid(prodCode))
             {
-                return new JsonResult("Updated");
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                Order = _orderService.GetUserCurrentOrder(userId);
+
+                Order.DiscountCode = _discountService.GetDiscountByCode(prodCode);
+                Order.HasCupon = true;
+
+                Order.Total = _discountService.GetDiscount(prodCode, Order.Total);
+
+                _orderService.UpdateOrder(Order);
+
+                return new JsonResult("True");
             }
             else
+                return new JsonResult("False");
+        }
+
+        public void OnGetRemoveDiscount()
+        {
+            CartItems = new();
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Order = _orderService.GetUserCurrentOrder(userId);
+            _orderProductService.GetOrderCurrentProducts(Order.Id);
+
+            Order.HasCupon = false;
+            Order.DiscountCode = null;
+
+            Order.SubTotal = _orderProductService.GetOrderSubtotal(Order.Id);
+            Order.Total = Order.SubTotal;
+
+            _orderService.UpdateOrder(Order);
+
+
+            foreach (var item in Order.Order_Product)
             {
-                return new JsonResult("Invalid");
+                CartItems.Add(new CartItem()
+                {
+                    Product = _productService.GetProductById(item.ProductId),
+                    Quantity = item.Quantity
+                });
             }
+        }
+
+        public PartialViewResult OnGetPartialTotal()
+        {
+            CartItems = new();
+
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Order = _orderService.GetUserCurrentOrder(userId);
+            _orderProductService.GetOrderCurrentProducts(Order.Id);
+
+            foreach (var item in Order.Order_Product)
+            {
+                CartItems.Add(new CartItem()
+                {
+                    Product = _productService.GetProductById(item.ProductId),
+                    Quantity = item.Quantity
+                });
+            }
+
+            return Partial("_OrderTotalPartial", Order);
         }
     }
 }

@@ -20,13 +20,15 @@ namespace Web.Pages.Cart
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOrderProductService _orderProductService;
         private readonly IOrderService _orderService;
+        private readonly IAuthorizationService _authorizationService;
 
         public SummaryModel(IProductService productService, 
                             IBraintreeGate braintreeGate, 
                             IDiscountService discountService, 
                             IHttpContextAccessor httpContextAccessor, 
                             IOrderProductService orderProductService,
-                            IOrderService orderService)
+                            IOrderService orderService,
+                            IAuthorizationService authorizationService)
         {
             _productService = productService;
             _braintreeGate = braintreeGate;
@@ -34,6 +36,7 @@ namespace Web.Pages.Cart
             _httpContextAccessor = httpContextAccessor;
             _orderProductService = orderProductService;
             _orderService = orderService;
+            _authorizationService = authorizationService;
         }
 
         public List<CartItem> CartItems { get; set; }
@@ -41,13 +44,19 @@ namespace Web.Pages.Cart
         public ApplicationCore.Entities.Order Order { get; set; }
 
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            Order = _orderService.GetUserCurrentOrder(userId);
+
+            if(Order == null)
+            {
+                return new NotFoundResult();
+            }
+
             List<Item> Items = new ();
             CartItems = new();
 
-            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            Order = _orderService.GetUserCurrentOrder(userId);
             _orderProductService.GetOrderCurrentProducts(Order.Id);
 
             foreach(var item in Order.Order_Product)
@@ -63,6 +72,8 @@ namespace Web.Pages.Cart
             var clientToken = gateway.ClientToken.Generate();
             ViewData["ClientToken"] = clientToken;
             ViewData["Total"] = Order.Total;
+
+            return Page();
         }
 
         public IActionResult OnPost(IFormCollection collection)
@@ -106,7 +117,7 @@ namespace Web.Pages.Cart
                 var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 Order = _orderService.GetUserCurrentOrder(userId);
 
-                Order.DiscountCode = _discountService.GetDiscountByCode(prodCode);
+                Order.DiscountCodeId = _discountService.GetDiscountByCode(prodCode).Id;
                 Order.HasCupon = true;
 
                 Order.Total = _discountService.GetDiscount(prodCode, Order.Total);
@@ -128,7 +139,7 @@ namespace Web.Pages.Cart
             _orderProductService.GetOrderCurrentProducts(Order.Id);
 
             Order.HasCupon = false;
-            Order.DiscountCode = null;
+            Order.DiscountCodeId = null;
 
             Order.SubTotal = _orderProductService.GetOrderSubtotal(Order.Id);
             Order.Total = Order.SubTotal;

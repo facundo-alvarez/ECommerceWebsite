@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace ApplicationCore.Entities
+﻿namespace ApplicationCore.Entities
 {
     public class User_Product
     {

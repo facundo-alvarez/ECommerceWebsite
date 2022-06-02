@@ -78,7 +78,7 @@ namespace Web.Pages.Admin.ProductsManagement
                 }
                 else
                 {
-                    var oldProduct = _productSevice.GetProductByIdNoTracking(Product.Id);
+                    var oldProduct = _productSevice.GetProductById(Product.Id);
 
                     if (files.Count > 0)
                     {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Data.Migrations
 {
-    public partial class UpdateOrderAndDiscountCode : Migration
+    public partial class DiscountCodeUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

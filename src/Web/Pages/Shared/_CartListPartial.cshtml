@@ -66,15 +66,12 @@ else
             <p>Taxes and shipping calculated at check out </p>
             @if(User.Identity.IsAuthenticated)
             {
-                <form method="post">
-                    <button class="btn btn-primary">Check Out</button>
-                </form>
+                <a class="btn btn-primary" asp-page="Summary">Check Out</a>
             }
             else
             {
-                <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">Loggin To Checkout</a>
+                <a class="btn btn-primary" asp-page="Summary">Loggin To Checkout</a>
             }
-
         </div>
     </div>
 }

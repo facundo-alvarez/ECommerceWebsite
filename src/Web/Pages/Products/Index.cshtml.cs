@@ -1,5 +1,6 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Specifications;
 using ApplicationCore.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -39,13 +40,6 @@ namespace Web.Pages.Products
         public int Count { get; set; }
         public int PageSize { get; set; } = 6;
 
-
-        [BindProperty(SupportsGet = true)]
-        public int? MinPrice { get; set; }
-
-        [BindProperty(SupportsGet = true)]
-        public int? MaxPrice { get; set; }
-
         [BindProperty]
         public Product Product { get; set; }
 
@@ -58,25 +52,21 @@ namespace Web.Pages.Products
 
         public void OnGet()
         {
+            Specification<Product> spec = Specification<Product>.All;
+
+            
+            var newSpec = new ProductsOnSaleSpecification();
 
             var productsFromDb = _productService.GetProducts();
 
             if (Category != "all")
             {
-                var categoryId = _categoryService.GetCategories().Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
-
-                productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
-            }
-
-
-            if (MinPrice != null || MaxPrice != null)
-            {
-                productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
+                var categorySpecification = new ProductsByCategorySpecification(Category);
+                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
             }
 
             Count = productsFromDb.Count();
             ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);
-
         }
 
         public void OnGetAddToCart(int prodId)
@@ -102,7 +92,7 @@ namespace Web.Pages.Products
                     order.Total = order.SubTotal;
 
                     order.HasCupon = false;
-                    order.DiscountCode = null;
+                    order.DiscountCodeId = null;
 
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
@@ -154,15 +144,8 @@ namespace Web.Pages.Products
 
             if (Category != "all")
             {
-                var categoryId = _categoryService.GetCategories().Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
-
-                productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
-            }
-
-
-            if (MinPrice != null || MaxPrice != null)
-            {
-                productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
+                var categorySpecification = new ProductsByCategorySpecification(Category);
+                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
             }
 
             Count = productsFromDb.Count();
@@ -201,15 +184,8 @@ namespace Web.Pages.Products
 
             if (Category != "all")
             {
-                var categoryId = categories.Where(c => c.Name.ToLower() == Category).Select(c => c.Id).FirstOrDefault();
-
-                productsFromDb = productsFromDb.Where(p => p.CategoryId == categoryId);
-            }
-
-
-            if (MinPrice != null || MaxPrice != null)
-            {
-                productsFromDb = productsFromDb.Where(p => p.Price >= MinPrice && p.Price <= MaxPrice).OrderBy(p => p.Price).ToList();
+                var categorySpecification = new ProductsByCategorySpecification(Category);
+                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
             }
 
             IsProductAdded = true;

@@ -82,7 +82,7 @@ namespace Web.Pages.Products
                     order.Total = order.SubTotal;
 
                     order.HasCupon = false;
-                    order.DiscountCode = null;
+                    order.DiscountCodeId = null;
 
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);

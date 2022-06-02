@@ -1,57 +1,57 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Specifications;
 
 namespace ApplicationCore.Services
 {
     public class ProductService : IProductService
     {
-        private IProductRepository _productRepository;
+        private readonly IGenericRepository<Product> _genericRepository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IGenericRepository<Product> genericRepository)
         {
-            _productRepository = productRepository;
+            _genericRepository = genericRepository;
         }
 
-        public IEnumerable<Product> GetProducts()
+        public IReadOnlyList<Product> GetProducts()
         {
-            return _productRepository.GetProducts();
+            return _genericRepository.GetAll().ToList();
         }
 
         public Product GetProductById(int id)
         {
-            return _productRepository.GetProductById(id);
+            return _genericRepository.Get(id);
         }
 
         public void AddProduct(Product product)
         {
-            _productRepository.AddProduct(product);
+            _genericRepository.Insert(product);
         }
 
         public void RemoveProduct(Product product)
         {
-            _productRepository.RemoveProduct(product);
+            _genericRepository.Delete(product);
         }
 
         public void UpdateProduct(Product product)
         {
-            _productRepository.UpdateProduct(product);
+            _genericRepository.Update(product);
         }
 
         public void SaveProduct()
         {
-            _productRepository.SaveProduct();
+            _genericRepository.Save();
         }
 
-        public Product GetProductByIdNoTracking(int id)
+        public IReadOnlyList<Product> GetRelatedProducts(Category category)
         {
-            return _productRepository.GetProductByIdNoTracking(id);
+            return _genericRepository.GetAll().Where(p => p.CategoryId == category.Id).ToList();
         }
 
-        public IEnumerable<Product> GetRelatedProducts(Category category)
+        public IReadOnlyList<Product> GetProductsWithSpecification(Specification<Product> specification)
         {
-            return _productRepository.GetProducts().Where(c => c.Category.Id == category.Id);
+            return _genericRepository.GetAll().Where(specification.ToExpression()).ToList();
         }
-
     }
 }
 

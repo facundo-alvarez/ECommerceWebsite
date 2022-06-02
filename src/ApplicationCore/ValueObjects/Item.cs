@@ -1,7 +1,4 @@
-﻿using ApplicationCore.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace ApplicationCore.ValueObjects
+﻿namespace ApplicationCore.ValueObjects
 {
     public class Item
     {

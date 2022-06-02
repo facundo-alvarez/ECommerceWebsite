@@ -1,5 +1,6 @@
 using ApplicationCore.Interfaces;
 using ApplicationCore.ValueObjects;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
@@ -70,35 +71,6 @@ namespace Web.Pages.Cart
             }
         }
 
-        public IActionResult OnPost()
-        {
-            List<Item> Cart = new();
-            CartItems = new();
-
-            if (User.Identity.IsAuthenticated)
-            { 
-                return RedirectToPage("Summary");
-            }
-            else
-            { 
-                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
-                {
-                    Cart = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-                    foreach (var item in Cart)
-                    {
-                        CartItems.Add(new CartItem()
-                        {
-                            Product = _productService.GetProductById(item.ProductId),
-                            Quantity = item.Quantity
-                        });
-                    }
-                }
-
-                return Page();
-            }
-
-        }
-
         public void OnGetDelete(int id)
         {
             List<Item> Cart = new();
@@ -110,7 +82,7 @@ namespace Web.Pages.Cart
                 var order = _orderService.GetUserCurrentOrder(userId);
                 _orderProductService.RemoveProductFormCurrentOrder(order.Id, id);
 
-                order.DiscountCode = null;
+                order.DiscountCodeId = null;
                 order.HasCupon = false;
 
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
@@ -160,7 +132,7 @@ namespace Web.Pages.Cart
 
                 _orderProductService.RemoveProductQuantity(order.Id, id, 1);
 
-                order.DiscountCode = null;
+                order.DiscountCodeId = null;
                 order.HasCupon = false;
 
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
@@ -198,7 +170,7 @@ namespace Web.Pages.Cart
 
                 _orderProductService.AddProductQuantity(order.Id, id, 1);
 
-                order.DiscountCode = null;
+                order.DiscountCodeId = null;
                 order.HasCupon = false;
 
                 order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
@@ -263,6 +235,8 @@ namespace Web.Pages.Cart
                 if (order != null)
                 {
                     var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
+
+
                     foreach (var product in orderProducts)
                     {
                         CartItems.Add(new CartItem()

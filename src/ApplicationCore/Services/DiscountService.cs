@@ -5,16 +5,16 @@ namespace ApplicationCore.Services
 {
     public class DiscountService : IDiscountService
     {
-        private readonly IDiscountRepository _discountRepository;
+        private readonly IGenericRepository<DiscountCode> _genericRepository;
 
-        public DiscountService(IDiscountRepository discountRepository)
+        public DiscountService(IGenericRepository<DiscountCode> genericRepository)
         {
-            _discountRepository = discountRepository;
+            _genericRepository = genericRepository;
         }
 
         public decimal GetDiscount(string code, decimal total)
         {
-            var discount = _discountRepository.GetDiscoutCode(code);
+            var discount = _genericRepository.GetAll().Where(d => d.Code == code).FirstOrDefault();
 
                 if (discount.Type == "percentage")
                 {
@@ -32,17 +32,12 @@ namespace ApplicationCore.Services
 
         public DiscountCode GetDiscountByCode(string code)
         {
-            return _discountRepository.GetDiscoutCode(code);
-        }
-
-        public string GetDiscountName(string code)
-        {
-            return _discountRepository.GetDiscoutCode(code).Name;
+            return _genericRepository.GetAll().Where(d => d.Code == code).FirstOrDefault();
         }
 
         public bool IsValid(string code)
         {
-            var discount = _discountRepository.GetDiscoutCode(code);
+            var discount = _genericRepository.GetAll().Where(d => d.Code == code).FirstOrDefault();
 
             if (discount != null)
             {

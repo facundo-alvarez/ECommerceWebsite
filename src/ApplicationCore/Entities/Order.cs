@@ -12,7 +12,8 @@ namespace ApplicationCore.Entities
 
         public bool HasCupon { get; set; } = false;
 
-        public DiscountCode? DiscountCode { get; set; } = null;
+        public int? DiscountCodeId { get; set; }
+        public virtual DiscountCode DiscountCode { get; set; }
 
         public decimal SubTotal { get; set; } = 0;
 

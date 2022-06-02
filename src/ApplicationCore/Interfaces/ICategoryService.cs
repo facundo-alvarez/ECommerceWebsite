@@ -4,6 +4,7 @@ namespace ApplicationCore.Interfaces
 {
     public interface ICategoryService
     {
-        IEnumerable<Category> GetCategories();
+        IReadOnlyList<Category> GetCategories();
+        Category GetCategory(string name);
     }
 }

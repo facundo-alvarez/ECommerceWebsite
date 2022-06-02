@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220601155543_UpdateOrderAndDiscountCode")]
-    partial class UpdateOrderAndDiscountCode
+    [Migration("20220602072236_DiscountCodeUpdate")]
+    partial class DiscountCodeUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

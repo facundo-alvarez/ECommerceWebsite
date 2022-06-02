@@ -49,11 +49,11 @@ builder.Services.Configure<BraintreeSettings>(builder.Configuration.GetSection("
 
 
 builder.Services.AddTransient<IGenericRepository<Category>, GenericRepository<Category>>();
+builder.Services.AddTransient<IGenericRepository<Product>, GenericRepository<Product>>();
 builder.Services.AddTransient<IGenericRepository<User_Product>, GenericRepository<User_Product>>();
 builder.Services.AddTransient<IGenericRepository<Order_Product>, GenericRepository<Order_Product>>();
 builder.Services.AddTransient<IGenericRepository<Order>, GenericRepository<Order>>();
-builder.Services.AddTransient<IProductRepository, ProductRepository>();
-builder.Services.AddTransient<IDiscountRepository, DiscountRepository>();
+builder.Services.AddTransient<IGenericRepository<DiscountCode>, GenericRepository<DiscountCode>>();
 
 
 builder.Services.AddTransient<ICategoryService, CategoryService>();

@@ -15,10 +15,9 @@ namespace Infrastructure.Repository
             _table = _db.Set<T>();
         }
 
-
-        public IEnumerable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
-            return _table.ToList();
+            return _table;
         }
 
         public void Delete(object id)

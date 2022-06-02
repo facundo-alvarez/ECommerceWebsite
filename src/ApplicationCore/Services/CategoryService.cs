@@ -12,9 +12,15 @@ namespace ApplicationCore.Services
             _genericRepositry = genericRepositry;
         }
 
-        public IEnumerable<Category> GetCategories()
+
+        public IReadOnlyList<Category> GetCategories()
         {
-            return _genericRepositry.GetAll();
+            return _genericRepositry.GetAll().ToList();
+        }
+
+        public Category GetCategory(string name)
+        {
+            return _genericRepositry.GetAll().Where(c => c.Name.ToLower() == name).FirstOrDefault();
         }
     }
 }

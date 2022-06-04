@@ -5,6 +5,7 @@ using ApplicationCore.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
+using System.Text.Json;
 using Web.Utility;
 
 namespace Web.Pages.Products
@@ -33,7 +34,7 @@ namespace Web.Pages.Products
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public List<Product> ProductList { get; set; }
+        public IReadOnlyList<Product> ProductList { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
@@ -52,12 +53,8 @@ namespace Web.Pages.Products
 
         public void OnGet()
         {
-            Specification<Product> spec = Specification<Product>.All;
-
-            
-            var newSpec = new ProductsOnSaleSpecification();
-
             var productsFromDb = _productService.GetProducts();
+
 
             if (Category != "all")
             {
@@ -153,47 +150,6 @@ namespace Web.Pages.Products
             #endregion
         }
 
-        public void OnPost()
-        {
-
-            List<Item> cartItems = new List<Item>();
-
-            if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
-            {
-                cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-            }
-            if (cartItems.Any(p => p.ProductId == Product.Id))
-            {
-                cartItems.FirstOrDefault(p => p.ProductId == Product.Id).Quantity += 1;
-            }
-            else
-            {
-                cartItems.Add(new Item()
-                {
-                    ProductId = Product.Id,
-                    Quantity = 1
-                });
-            }
-
-            HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
-
-
-            var productsFromDb = _productService.GetProducts();
-            var categories = _categoryService.GetCategories();
-
-
-            if (Category != "all")
-            {
-                var categorySpecification = new ProductsByCategorySpecification(Category);
-                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
-            }
-
-            IsProductAdded = true;
-
-            Count = productsFromDb.Count();
-            ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);
-
-        }
 
         public ActionResult OnGetPartialCart()
         {
@@ -222,6 +178,26 @@ namespace Web.Pages.Products
             }
         }
 
+        public PartialViewResult OnPostProductsPartial([FromBody] List<Filter> filters)
+        {
+            Specification<Product> spec = Specification<Product>.All;
+
+            foreach (var filter in filters)
+            {
+                if (filter.Id == "onSaleInput")
+                    spec = spec.And(new ProductsOnSaleSpecification());
+                if (filter.Id == "onStockInput")
+                    spec = spec.And(new ProductsOnStockSpecification());
+            }
+
+            ProductList = _productService.GetProductsWithSpecification(spec);
+
+            Count = ProductList.Count();
+
+            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
+
+            return Partial("_ProductListPartial", ProductList);
+        }
 
         public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
     }

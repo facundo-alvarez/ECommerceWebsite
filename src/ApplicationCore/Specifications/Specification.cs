@@ -11,7 +11,6 @@ namespace ApplicationCore.Specifications
         }
     }
 
-
     public abstract class Specification<T>
     {
         public static readonly Specification<T> All = new IdentitySpecification<T>();
@@ -28,7 +27,7 @@ namespace ApplicationCore.Specifications
         {
             if (this == All)
                 return specification;
-            if (specification == null)
+            if (specification == All)
                 return this;
 
             return new AndSpecification<T>(this, specification);
@@ -42,7 +41,7 @@ namespace ApplicationCore.Specifications
             return new OrSpecification<T>(this, specification);
         }
 
-        public Specification<T> Not(Specification<T> specification)
+        public Specification<T> Not()
         {
             return new NotSpecification<T>(this);
         }
@@ -55,8 +54,8 @@ namespace ApplicationCore.Specifications
 
         public AndSpecification(Specification<T> left, Specification<T> right)
         {
-            _left = left;
             _right = right;
+            _left = left;
         }
 
         public override Expression<Func<T, bool>> ToExpression()
@@ -64,9 +63,9 @@ namespace ApplicationCore.Specifications
             Expression<Func<T, bool>> leftExpression = _left.ToExpression();
             Expression<Func<T, bool>> rightExpression = _right.ToExpression();
 
-            BinaryExpression andExpression = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
+            var invokedExpression = Expression.Invoke(rightExpression, leftExpression.Parameters);
 
-            return Expression.Lambda<Func<T, bool>>(andExpression, leftExpression.Parameters.Single());
+            return (Expression<Func<T, Boolean>>)Expression.Lambda(Expression.AndAlso(leftExpression.Body, invokedExpression), leftExpression.Parameters);
         }
     }
 
@@ -77,8 +76,8 @@ namespace ApplicationCore.Specifications
 
         public OrSpecification(Specification<T> left, Specification<T> right)
         {
-            _left = left;
             _right = right;
+            _left = left;
         }
 
         public override Expression<Func<T, bool>> ToExpression()
@@ -86,9 +85,9 @@ namespace ApplicationCore.Specifications
             Expression<Func<T, bool>> leftExpression = _left.ToExpression();
             Expression<Func<T, bool>> rightExpression = _right.ToExpression();
 
-            BinaryExpression orExpression = Expression.OrElse(leftExpression.Body, rightExpression.Body);
+            var invokedExpression = Expression.Invoke(rightExpression, leftExpression.Parameters);
 
-            return Expression.Lambda<Func<T, bool>>(orExpression, leftExpression.Parameters.Single());
+            return (Expression<Func<T, Boolean>>)Expression.Lambda(Expression.OrElse(leftExpression.Body, invokedExpression), leftExpression.Parameters);
         }
     }
 
@@ -104,7 +103,6 @@ namespace ApplicationCore.Specifications
         public override Expression<Func<T, bool>> ToExpression()
         {
             Expression<Func<T, bool>> expression = _specification.ToExpression();
-
             UnaryExpression notExpression = Expression.Not(expression.Body);
 
             return Expression.Lambda<Func<T, bool>>(notExpression, expression.Parameters.Single());
@@ -116,6 +114,14 @@ namespace ApplicationCore.Specifications
         public override Expression<Func<Product, bool>> ToExpression()
         {
             return product => product.IsOnSale == true;
+        }
+    }
+    
+    public sealed class ProductsOnStockSpecification : Specification<Product>
+    {
+        public override Expression<Func<Product, bool>> ToExpression()
+        {
+            return product => product.InStock == true;
         }
     }
 

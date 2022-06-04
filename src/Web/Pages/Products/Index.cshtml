@@ -1,5 +1,7 @@
 ﻿@page "{category:alpha}/{currentpage?}" 
 @model Web.Pages.Products.IndexModel
+@Html.AntiForgeryToken()
+
 
 <style>
     .desc {
@@ -11,26 +13,34 @@
     }
 </style>
 
-<div class="container-lg text-center">
+<div class="container-lg">
     <div class="row">
 
         <div class="col-3 border border-2 rounded-3 my-4">
-            <form method="get">
+            <div class="row">
                 <h4>Price Filter</h4>
-                <div class="row">
-                    <div class="col">
-                        <input type="number" class="form-control" min="1" max="100" placeholder="1"/>
-                    </div>
-                    <div class="col">
-                        <input type="number" class="form-control" min="1" max="100" placeholder="100"/>
-                    </div>
+                <div class="col">
+                    <input id="minPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="1"/>
                 </div>
-                <button type="submit" class="btn btn-primary">Filter</button>      
-                
-            </form>
+                <div class="col">
+                    <input id="maxPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="100"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-check">
+                  <input id="onSaleInput" class="form-check-input checkFilter" type="checkbox">
+                  <label class="form-check-label" for="flexCheckDefault">On Sale</label>
+                </div>
+                <div class="form-check">
+                  <input id="onStockInput" class="form-check-input checkFilter" type="checkbox">
+                  <label class="form-check-label" for="flexCheckDefault">On Stock</label>
+                </div>
+            </div>
+
+            <button id="filterButton" class="btn btn-primary">Filter</button>             
         </div>
 
-        <nav class="col-9">
+        <nav class="col-9 text-center">
 
             @if(Model.IsProductAdded)
             {
@@ -45,7 +55,7 @@
             }
 
 
-            <div class="row row-cols-lg-3">
+            <div class="row row-cols-lg-3" id="productList">
                 <partial name="_ProductListPartial" model="Model.ProductList"></partial>
             </div>
 
@@ -103,4 +113,101 @@
         });
     </script>
 
+    <script>
+
+        $(document).ready(function() {
+
+            var minPrice = 1;
+            var maxPrice = 100;
+
+            var data = {};
+            var filters = [];
+
+            $(document).on('change', '.checkFilter', function() {
+
+                var Id = $(this).attr('id').toString();
+
+                if (this.checked) {
+                    data = {
+                        'Id': Id,
+                        'Value': true
+                    };
+                    filters.push(data);
+                }
+                else {
+                    var index = filters.findIndex(data => data.Id == Id);
+                    filters.splice(index, 1);
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Page("Index","ProductsPartial")',
+                    dataType: "html",
+                    data: JSON.stringify(filters),
+                    contentType: "application/json",
+                    beforeSend: function (xhr) {
+
+                        xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function(response) {
+                        $('#productList').html(response);
+                    },
+                    failure: function() {
+                        alert("failure");
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+            }); 
+        });
+
+    </script>
+
+    <script>
+
+         $(document).on('change', '.priceFilter', function() {                
+                
+            var inputId = $(this).attr('id');
+            if (checkBoxes.find(value => value == inputId) == undefined) {
+                checkBoxes.push(inputId);
+                alert('pushed');
+            }
+
+            if (inputId == 'minPriceInput') {
+                minPrice = $(this).val();
+                if (minPrice < 1) {
+                    minPrice = 1;
+                }
+                if (minPrice > 100) {
+                    minPrice = 100;
+                }
+                $('#minPriceInput').val(minPrice);
+                if (minPrice > maxPrice) {
+                    maxPrice = minPrice;
+                    $('#maxPriceInput').val(maxPrice);
+                }
+            }
+            if (inputId == 'maxPriceInput') {
+                maxPrice = $(this).val();
+                if (maxPrice > 100) {
+                    maxPrice = 100;
+                }
+                if (maxPrice < 1) {
+                    maxPrice = 1;
+                }
+                $('#maxPriceInput').val(maxPrice);
+                if (maxPrice < minPrice) {
+                    minPrice = maxPrice;
+                    $('#minPriceInput').val(minPrice);
+                }
+            }
+
+            console.log(checkBoxes);
+            console.log('Min Price: ' +minPrice);
+            console.log('Max Price: ' +maxPrice);
+
+        });
+
+    </script>
 }

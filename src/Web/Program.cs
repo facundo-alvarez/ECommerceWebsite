@@ -23,6 +23,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultUI()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+
 
 // Add services to the container. 
 builder.Services.AddAuthorization(options =>
@@ -71,7 +73,7 @@ builder.Services.AddSingleton<IBraintreeGate, BraintreeGate>();
 builder.Services.Configure<RouteOptions>(options =>
 {
     options.LowercaseQueryStrings = true;
-    options.AppendTrailingSlash = true;
+    options.AppendTrailingSlash = false;
     options.LowercaseUrls = true;
 });
 

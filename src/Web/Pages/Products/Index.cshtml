@@ -1,4 +1,4 @@
-﻿@page "{category:alpha}/{currentpage?}" 
+﻿@page "{category:alpha}" 
 @model Web.Pages.Products.IndexModel
 @Html.AntiForgeryToken()
 
@@ -37,82 +37,49 @@
                 </div>
             </div>
 
-            <button id="filterButton" class="btn btn-primary">Filter</button>             
+            <button id="cleanFilters" class="btn btn-primary">Clean Filters</button>             
         </div>
 
         <nav class="col-9 text-center">
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    <select id="sortingSelect" class="form-select">
+                        <option selected disabled>-- Select --</option>
+                        <option value="1">Price Ascending</option>
+                        <option value="2">Price Descending</option>
+                    </select>
 
-            @if(Model.IsProductAdded)
-            {
-                <div class="toast align-items-center position-fixed" style="z-index: 100" id="MyToast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <strong>Product added to the cart</strong>
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
                 </div>
-            }
-
+            </div>
 
             <div class="row row-cols-lg-3" id="productList">
                 <partial name="_ProductListPartial" model="Model.ProductList"></partial>
             </div>
 
-
-            <nav>
-                <ul class="pagination">
-                    @for (var i = 1; i <= Model.TotalPages; i++)
-                    {
-                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                            <a asp-page="Index"  asp-route-currentpage="@i" class="page-link">@i</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
+            <button id="loadMore" class="btn btn-outline-primary">Load More</button>    
+            
         </nav>
     </div>
 </div>
 
 
 @section scripts{ 
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.unobtrusive-ajax.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            var toastHTMLElement = document.getElementById("MyToast")
-            var toastElement = new bootstrap.Toast(toastHTMLElement);
-
-            toastElement.show();
-
-        }, false);  
-    </script>
-
+    
+    @*Add to cart*@
      <script>
+
         $(document).on('click', '#addToCart', function() {
 
-            var productId = $(this).attr('prodid');
+            var productId = $(this).attr('proid');
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Index","AddToCart")',
-                data: {
-                    prodId: productId
-                },
-                success: function() {
-                    $('#cartMenu').load('?handler=PartialCart'); 
-                },
-                failure: function() {
-                    alert("failure");
-                },
-                error: function() {
-                    alert("error");
-                }
+            $.get('@Url.Page("Index","AddToCart")', { 'id': parseInt(productId) }, function(response) {
+                $('#cartMenu').html(response);
             });
         });
+
     </script>
 
+    @*Filters*@
     <script>
 
         $(document).ready(function() {
@@ -123,6 +90,7 @@
             var data = {};
             var filters = [];
 
+            //Check Filters
             $(document).on('change', '.checkFilter', function() {
 
                 var Id = $(this).attr('id').toString();
@@ -130,7 +98,7 @@
                 if (this.checked) {
                     data = {
                         'Id': Id,
-                        'Value': true
+                        'Value': 'true'
                     };
                     filters.push(data);
                 }
@@ -139,9 +107,80 @@
                     filters.splice(index, 1);
                 }
 
+                ajaxCall();
+
+            }); 
+
+            //Price Filters
+            $(document).on('change', '.priceFilter', function() {
+                
+                var inputId = $(this).attr('id').toString();
+
+                var index = filters.findIndex(data => data.Id == inputId);
+
+                if (index != -1) {
+                    filters.splice(index, 1);
+                }
+
+                if (inputId == 'minPriceInput') {
+
+                    minPrice = $(this).val();
+
+                    if (minPrice < 1) {
+                        minPrice = 1;
+                    }
+
+                    if (minPrice > 100) {
+                        minPrice = 100;
+                    }
+
+                    $('#minPriceInput').val(minPrice);
+
+                    data = {
+                        'Id': inputId,
+                        'Value': minPrice.toString()
+                    };
+
+                    filters.push(data);
+                }
+
+                if (inputId == 'maxPriceInput') {
+                    maxPrice = $(this).val();
+                    if (maxPrice > 100) {
+                        maxPrice = 100;
+                    }
+                    if (maxPrice < 1) {
+                        maxPrice = 1;
+                    }
+
+                    data = {
+                        'Id': inputId,
+                        'Value': maxPrice.toString()
+                    };
+
+                    filters.push(data);
+                }
+
+                ajaxCall();
+            });
+
+            //Clean Filters
+            $(document).on('click', '#cleanFilters', function() {
+
+                filters = [];
+
+                $('#minPriceInput').val('');    
+                $('#maxPriceInput').val('');
+                $('#onStockInput').prop('checked', false); 
+                $('#onSaleInput').prop('checked', false); 
+
+                ajaxCall();
+            });
+
+            function ajaxCall() {
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Page("Index","ProductsPartial")',
+                    url: '@Url.Page("Index","ProductsFilters")',
                     dataType: "html",
                     data: JSON.stringify(filters),
                     contentType: "application/json",
@@ -151,6 +190,7 @@
                     },
                     success: function(response) {
                         $('#productList').html(response);
+                        $('#loadMore').prop("disabled", false).html('Load more');
                     },
                     failure: function() {
                         alert("failure");
@@ -159,55 +199,43 @@
                         alert("error");
                     }
                 });
-            }); 
+            }
+        });
+
+
+    </script>
+
+    @*Load more*@
+    <script>
+
+        $(document).on('click', '#loadMore', function(currentPage) {
+
+            $.get('@Url.Page("Index","LoadMore")', function(response) {
+
+                if (response != 'empty') {
+                    $('#productList').append(response);
+                    $('#loadMore').prop("disabled", false).html('Load more');
+                }
+                else {
+                    $('#loadMore').prop("disabled", true).html('End of results');
+                }
+            });
         });
 
     </script>
 
+    @*Order By*@
     <script>
 
-         $(document).on('change', '.priceFilter', function() {                
-                
-            var inputId = $(this).attr('id');
-            if (checkBoxes.find(value => value == inputId) == undefined) {
-                checkBoxes.push(inputId);
-                alert('pushed');
-            }
+        $(document).on('change', '#sortingSelect', function() {
+    
+            var selectId = $(this).val();
 
-            if (inputId == 'minPriceInput') {
-                minPrice = $(this).val();
-                if (minPrice < 1) {
-                    minPrice = 1;
-                }
-                if (minPrice > 100) {
-                    minPrice = 100;
-                }
-                $('#minPriceInput').val(minPrice);
-                if (minPrice > maxPrice) {
-                    maxPrice = minPrice;
-                    $('#maxPriceInput').val(maxPrice);
-                }
-            }
-            if (inputId == 'maxPriceInput') {
-                maxPrice = $(this).val();
-                if (maxPrice > 100) {
-                    maxPrice = 100;
-                }
-                if (maxPrice < 1) {
-                    maxPrice = 1;
-                }
-                $('#maxPriceInput').val(maxPrice);
-                if (maxPrice < minPrice) {
-                    minPrice = maxPrice;
-                    $('#minPriceInput').val(minPrice);
-                }
-            }
-
-            console.log(checkBoxes);
-            console.log('Min Price: ' +minPrice);
-            console.log('Max Price: ' +maxPrice);
-
-        });
+            $.get('@Url.Page("Index","Sort")', { 'id' : selectId }, function(response) {
+                $('#productList').html(response);
+                $('#loadMore').prop("disabled", false).html('Load more');
+            });
+        });      
 
     </script>
 }

@@ -59,7 +59,7 @@ namespace Web.Pages.Products
         }
 
 
-        public void OnGetAddToCart(int prodId, int quantity)
+        public PartialViewResult OnGetAddToCart(int id, int quantity = 1)
         {
             List<Item> cartItems = new();
 
@@ -67,7 +67,7 @@ namespace Web.Pages.Products
             {
                 cartItems.Add(new Item()
                 {
-                    ProductId = prodId,
+                    ProductId = id,
                     Quantity = quantity,
                 });
                 var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -86,15 +86,17 @@ namespace Web.Pages.Products
 
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
+
+                    return Partial("_CartPartial", order.Order_Product.Count());
                 }
                 else
                 {
                     order = new();
                     order.UserId = userId;
+                    order.OrderStatus = "In process";
 
                     _orderService.InsertOrder(order);
                     _orderService.SaveOrder(order);
-                    order.OrderStatus = "In process";
 
                     order = _orderService.GetUserCurrentOrder(userId);
 
@@ -102,9 +104,11 @@ namespace Web.Pages.Products
 
                     order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
                     order.Total = order.SubTotal;
-                    
+
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
+
+                    return Partial("_CartPartial", order.Order_Product.Count());
                 }
             }
             else
@@ -114,23 +118,26 @@ namespace Web.Pages.Products
                     cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 }
 
-                if (cartItems.Any(p => p.ProductId == prodId))
+                if (cartItems.Any(p => p.ProductId == id))
                 {
-                    cartItems.FirstOrDefault(p => p.ProductId == prodId).Quantity += quantity;
+                    cartItems.FirstOrDefault(p => p.ProductId == id).Quantity += quantity;
                 }
                 else
                 {
                     cartItems.Add(new Item()
                     {
-                        ProductId = prodId,
+                        ProductId = id,
                         Quantity = quantity
                     });
                 }
 
                 HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
+
+                return Partial("_CartPartial", cartItems.Count());
             }
 
-            Product = _productService.GetProductById(prodId);
+
+            Product = _productService.GetProductById(id);
             Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
             RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
             Tags = Product.Tags.Split(',').ToList();

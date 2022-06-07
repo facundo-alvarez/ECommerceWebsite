@@ -34,39 +34,67 @@ namespace Web.Pages.Products
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public IReadOnlyList<Product> ProductList { get; set; }
-
-        [BindProperty(SupportsGet = true)]
-        public int CurrentPage { get; set; } = 1;
-        public int Count { get; set; }
-        public int PageSize { get; set; } = 6;
-
-        [BindProperty]
-        public Product Product { get; set; }
-
         [BindProperty(SupportsGet = true)]
         public string Category { get; set; }
+        public IReadOnlyList<Product> ProductList { get; set; }
 
-        public bool IsProductAdded { get; set; }
-
+        int CurrentPage = 1;
+        int PageSize = 6;
 
 
         public void OnGet()
         {
-            var productsFromDb = _productService.GetProducts();
+            ProductList = _productService.GetProductsWithSpecification(new ProductsByCategorySpecification(Category));
 
+            HttpContext.Session.SetInt32(SiteConstants.CurrentPage, CurrentPage);
+            HttpContext.Session.Remove(SiteConstants.Sorting);
 
-            if (Category != "all")
-            {
-                var categorySpecification = new ProductsByCategorySpecification(Category);
-                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
-            }
-
-            Count = productsFromDb.Count();
-            ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);
+            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
         }
 
-        public void OnGetAddToCart(int prodId)
+        public IActionResult OnGetLoadMore()
+        {
+            List<Filter> filters = new();
+
+            if (HttpContext.Session.Get(SiteConstants.ProductsFilters) != null)
+            {
+                filters = HttpContext.Session.Get<List<Filter>>(SiteConstants.ProductsFilters);
+            }
+
+            if(filters.Count > 0)
+            {
+                FilterProducts(filters);
+            }
+            else
+            {
+                ProductList = _productService.GetProductsWithSpecification(new ProductsByCategorySpecification(Category));
+            }
+
+            var sorting = HttpContext.Session.GetString(SiteConstants.Sorting);
+
+            if (!string.IsNullOrEmpty(sorting))
+            {
+                SortingProducts(sorting);
+            }
+
+            if(HttpContext.Session.GetInt32(SiteConstants.CurrentPage) != null)
+            {
+                CurrentPage = (int)HttpContext.Session.GetInt32(SiteConstants.CurrentPage) + 1;
+                HttpContext.Session.SetInt32(SiteConstants.CurrentPage, CurrentPage);
+            }
+
+            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
+
+            if (ProductList.Count() == 0)
+            {
+                return new JsonResult("empty");
+            }
+
+
+            return Partial("_ProductListPartial", ProductList);
+        }
+
+        public PartialViewResult OnGetAddToCart(int id)
         {
             List<Item> cartItems = new();
 
@@ -74,7 +102,7 @@ namespace Web.Pages.Products
             {
                 cartItems.Add(new Item()
                 {
-                    ProductId = prodId,
+                    ProductId = id,
                     Quantity = 1,
                 });
                 var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -93,15 +121,17 @@ namespace Web.Pages.Products
 
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
+
+                    return Partial("_CartPartial", order.Order_Product.Count());
                 }
                 else
                 {
                     order = new();
                     order.UserId = userId;
+                    order.OrderStatus = "In process";
 
                     _orderService.InsertOrder(order);
                     _orderService.SaveOrder(order);
-                    order.OrderStatus = "In process";
 
                     order = _orderService.GetUserCurrentOrder(userId);
 
@@ -112,6 +142,8 @@ namespace Web.Pages.Products
 
                     _orderService.UpdateOrder(order);
                     _orderService.SaveOrder(order);
+
+                    return Partial("_CartPartial", order.Order_Product.Count());
                 }
             }
             else
@@ -121,35 +153,26 @@ namespace Web.Pages.Products
                     cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 }
 
-                if (cartItems.Any(p => p.ProductId == prodId))
+                if (cartItems.Any(p => p.ProductId == id))
                 {
-                    cartItems.FirstOrDefault(p => p.ProductId == prodId).Quantity += 1;
+                    cartItems.FirstOrDefault(p => p.ProductId == id).Quantity += 1;
                 }
                 else
                 {
                     cartItems.Add(new Item()
                     {
-                        ProductId = prodId,
+                        ProductId = id,
                         Quantity = 1
                     });
                 }
 
                 HttpContext.Session.Set(SiteConstants.SessionCart, cartItems);
-            }
-            #region Populate Items
-            var productsFromDb = _productService.GetProducts();
 
-            if (Category != "all")
-            {
-                var categorySpecification = new ProductsByCategorySpecification(Category);
-                productsFromDb = _productService.GetProductsWithSpecification(categorySpecification);
+                return Partial("_CartPartial", cartItems.Count());
             }
 
-            Count = productsFromDb.Count();
-            ProductList = _paginationService.GetPaginatedResult(productsFromDb, CurrentPage, PageSize);
-            #endregion
+            ProductList = _productService.GetProductsWithSpecification(new ProductsByCategorySpecification(Category));
         }
-
 
         public ActionResult OnGetPartialCart()
         {
@@ -178,9 +201,62 @@ namespace Web.Pages.Products
             }
         }
 
-        public PartialViewResult OnPostProductsPartial([FromBody] List<Filter> filters)
+        public PartialViewResult OnPostProductsFilters([FromBody] List<Filter> filters)
+        {
+            HttpContext.Session.Set(SiteConstants.ProductsFilters, filters);
+
+            HttpContext.Session.SetInt32(SiteConstants.CurrentPage, 1);
+
+            FilterProducts(filters);
+
+            var sorting = HttpContext.Session.GetString(SiteConstants.Sorting);
+
+            if(!string.IsNullOrEmpty(sorting))
+            {
+                SortingProducts(sorting);
+            }
+
+            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
+
+
+            return Partial("_ProductListPartial", ProductList);
+        }
+
+        public PartialViewResult OnGetSort(string id)
+        {
+            List<Filter> filters = new();
+
+            HttpContext.Session.SetString(SiteConstants.Sorting, id);
+            HttpContext.Session.SetInt32(SiteConstants.CurrentPage, 1);
+
+            if (HttpContext.Session.Get(SiteConstants.ProductsFilters) != null)
+            {
+                filters = HttpContext.Session.Get<List<Filter>>(SiteConstants.ProductsFilters);
+            }
+
+            if (filters.Count > 0)
+            {
+                FilterProducts(filters);
+            }
+            else
+            {
+                ProductList = _productService.GetProductsWithSpecification(new ProductsByCategorySpecification(Category));
+            }
+
+            SortingProducts(id);
+
+            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
+
+            return Partial("_ProductListPartial", ProductList);
+        }
+
+
+        //Methods
+        void FilterProducts(List<Filter> filters)
         {
             Specification<Product> spec = Specification<Product>.All;
+
+            spec = spec.And(new ProductsByCategorySpecification(Category));
 
             foreach (var filter in filters)
             {
@@ -188,18 +264,30 @@ namespace Web.Pages.Products
                     spec = spec.And(new ProductsOnSaleSpecification());
                 if (filter.Id == "onStockInput")
                     spec = spec.And(new ProductsOnStockSpecification());
+                if (filter.Id == "minPriceInput")
+                    spec = spec.And(new ProductsMinPriceSpecification(Convert.ToDecimal(filter.Value)));
+                if (filter.Id == "maxPriceInput")
+                    spec = spec.And(new ProductsMaxPriceSpecification(Convert.ToDecimal(filter.Value)));
             }
 
             ProductList = _productService.GetProductsWithSpecification(spec);
-
-            Count = ProductList.Count();
-
-            ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
-
-            return Partial("_ProductListPartial", ProductList);
         }
 
-        public int TotalPages => (int)Math.Ceiling(decimal.Divide(Count, PageSize));
+        void SortingProducts(string id)
+        {
+            var sortedProducts = new List<Product>();
+
+            switch (id)
+            {
+                case "1":
+                    ProductList = ProductList.OrderBy(p => p.Price).ToList();
+                    break;
+
+                case "2":
+                    ProductList = ProductList.OrderByDescending(p => p.Price).ToList();
+                    break;
+            }
+        }
     }
 }
 

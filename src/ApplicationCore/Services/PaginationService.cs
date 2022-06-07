@@ -8,7 +8,7 @@ namespace ApplicationCore.Services
     {
         public List<Product> GetPaginatedResult(IEnumerable<Product> data, int currentPage, int pageSize)
         {
-            var result = data.OrderBy(d => d.Id).Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+            var result = data.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
             return result;
         }
     }

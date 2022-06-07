@@ -54,10 +54,23 @@ namespace Web.Pages.Cart
                 return new NotFoundResult();
             }
 
+            if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+            {
+                var sessionItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
+                _orderProductService.SetOrderProducts(sessionItems, Order.Id);
+
+                Order.SubTotal = _orderProductService.GetOrderSubtotal(Order.Id);
+                Order.Total = Order.SubTotal;
+
+                _orderService.UpdateOrder(Order);
+
+                HttpContext.Session.Clear();
+            }
+
             List<Item> Items = new ();
             CartItems = new();
 
-            _orderProductService.GetOrderCurrentProducts(Order.Id);
+            Order.Order_Product = _orderProductService.GetOrderCurrentProducts(Order.Id).ToList();
 
             foreach(var item in Order.Order_Product)
             {

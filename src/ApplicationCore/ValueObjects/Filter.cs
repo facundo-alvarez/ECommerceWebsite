@@ -3,6 +3,6 @@
     public class Filter
     {
         public string Id { get; set; }
-        public bool Value { get; set; }
+        public string Value { get; set; }
     }
 }

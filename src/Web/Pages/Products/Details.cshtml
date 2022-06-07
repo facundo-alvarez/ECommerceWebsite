@@ -34,7 +34,7 @@
             @if(Model.Product.InStock)
             {
                 <input id="quantityInput" type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" value="1"/>
-                <button id="addToCart" prodid="@Model.Product.Id" class="btn btn-primary addToCart"><i class="bi bi-cart-plus"></i> Add To Cart</button>
+                <button id="@Model.Product.Id" class="btn btn-primary addToCart"><i class="bi bi-cart-plus"></i> Add To Cart</button>
                 
                 @if(Model.IsAlreadyFavorite)
                 {
@@ -124,14 +124,9 @@
                                 <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
                                     <h5 class="card-title">@product.Name</h5>
                                 </a>
-                                @if(!product.InStock)
-                                {
-                                    <button disabled class="btn btn-primary w-100">Out Of Stock</button>
-                                }
-                                else
-                                {
-                                    <button relatedid="@product.Id" class="btn btn-primary addToCartRelated"><i class="bi bi-cart-plus"></i> Add To Cart</button>
-                                }
+
+                                <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-primary">View</a>
+                                
                             </div>
                         </div> 
                         
@@ -154,6 +149,7 @@
     </script>
     
     <script>
+
         $(document).ready(function() {
             var cache = '@Model.IsAlreadyFavorite';
 
@@ -188,57 +184,20 @@
                 });
             });
         });
+
     </script>
 
     <script>
-        $(document).on('click', '#addToCart', function() {
+
+        $(document).on('click', 'button', function() {
 
             var productQuantity = $('#quantityInput').val();
-            var productId = $(this).attr('prodid');
+            var productId = $(this).attr('id');
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Details","AddToCart")',
-                data: {
-                    prodId: productId,
-                    quantity: productQuantity
-                },
-                success: function() {
-                    $('#cartMenu').load('?handler=PartialCart'); 
-                },
-                failure: function() {
-                    alert("failure");
-                },
-                error: function() {
-                    alert("error");
-                }
+            $.get('@Url.Page("Details","AddToCart")', { 'id': productId, 'quantity': productQuantity }, function(result) {
+                $('#cartMenu').html(result);
             });
         });
-    </script>
 
-    <script>
-        $(document).on('click', '.addToCartRelated', function() {
-
-            var productQuantity = 1;
-            var productId = $(this).attr('relatedid');
-
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Details","AddToCart")',
-                data: {
-                    prodId: productId,
-                    quantity: productQuantity
-                },
-                success: function() {
-                    $('#cartMenu').load('?handler=PartialCart'); 
-                },
-                failure: function() {
-                    alert("failure");
-                },
-                error: function() {
-                    alert("error");
-                }
-            });
-        });
     </script>
 }

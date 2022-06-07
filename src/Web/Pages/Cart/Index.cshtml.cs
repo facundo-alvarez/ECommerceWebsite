@@ -71,7 +71,7 @@ namespace Web.Pages.Cart
             }
         }
 
-        public void OnGetDelete(int id)
+        public PartialViewResult OnGetDelete(int id)
         {
             List<Item> Cart = new();
             CartItems = new();
@@ -90,7 +90,7 @@ namespace Web.Pages.Cart
 
                 _orderService.UpdateOrder(order);
 
-                var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id).ToList();
+                var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
 
                 if(orderProducts.Count() == 0 || orderProducts == null)
                 {
@@ -99,12 +99,13 @@ namespace Web.Pages.Cart
 
                 foreach (var product in orderProducts)
                 {
-                    Cart.Add(new Item()
+                    CartItems.Add(new CartItem()
                     {
-                        ProductId = product.ProductId,
+                        Product = _productService.GetProductById(product.ProductId),
                         Quantity = product.Quantity,
                     });
                 }
+                return Partial("_CartListPartial", CartItems);
             }
             else
             {
@@ -114,50 +115,21 @@ namespace Web.Pages.Cart
                     Cart.Remove(Cart.FirstOrDefault(i => i.ProductId == id));
                     HttpContext.Session.Set<List<Item>>(SiteConstants.SessionCart, Cart);
                 }
-            }
-        }
 
-        public void OnGetRemoveQuantity(int id, int quantity)
-        {
-            List<Item> Cart = new();
-            CartItems = new();
-
-            if (User.Identity.IsAuthenticated)
-            {
-                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-                var order = _orderService.GetUserCurrentOrder(userId);
-
-                var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
-
-                _orderProductService.RemoveProductQuantity(order.Id, id, 1);
-
-                order.DiscountCodeId = null;
-                order.HasCupon = false;
-
-                order.SubTotal = _orderProductService.GetOrderSubtotal(order.Id);
-                order.Total = order.SubTotal;
-
-
-                _orderService.UpdateOrder(order);
-
-            }
-            else
-            { 
-                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
+                foreach (var item in Cart)
                 {
-                    Cart = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-
-                    if (quantity > 1)
+                    CartItems.Add(new CartItem()
                     {
-                        Cart.FirstOrDefault(i => i.ProductId == id).Quantity -= 1;
-                    }
-                    HttpContext.Session.Set<List<Item>>(SiteConstants.SessionCart, Cart);
+                        Product = _productService.GetProductById(item.ProductId),
+                        Quantity = item.Quantity
+                    });
                 }
+
+                return Partial("_CartListPartial", CartItems);
             }
         }
 
-        public void OnGetAddQuantity(int id, int quantity)
+        public PartialViewResult OnGetUpdateQuantity(int id, int updateQuantity)
         {
             List<Item> Cart = new();
             CartItems = new();
@@ -168,7 +140,7 @@ namespace Web.Pages.Cart
                 var order = _orderService.GetUserCurrentOrder(userId);
                 var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
 
-                _orderProductService.AddProductQuantity(order.Id, id, 1);
+                _orderProductService.UpdateProductQuantity(order.Id, id, updateQuantity);
 
                 order.DiscountCodeId = null;
                 order.HasCupon = false;
@@ -177,6 +149,19 @@ namespace Web.Pages.Cart
                 order.Total = order.SubTotal;
 
                 _orderService.UpdateOrder(order);
+
+                orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
+
+                foreach (var product in orderProducts)
+                {
+                    CartItems.Add(new CartItem()
+                    {
+                        Product = _productService.GetProductById(product.ProductId),
+                        Quantity = product.Quantity,
+                    });
+                }
+
+                return Partial("_CartListPartial", CartItems);
             }
             else
             {
@@ -184,12 +169,30 @@ namespace Web.Pages.Cart
                 {
                     Cart = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
 
-                    if (quantity < 100)
+                    var totalQuantity = Cart.FirstOrDefault(i => i.ProductId == id).Quantity += updateQuantity;
+
+                    if (totalQuantity > 100)
                     {
-                        Cart.FirstOrDefault(i => i.ProductId == id).Quantity += 1;
+                        Cart.FirstOrDefault(i => i.ProductId == id).Quantity = 100;
                     }
+                    if (totalQuantity < 1)
+                    {
+                        Cart.FirstOrDefault(i => i.ProductId == id).Quantity = 1;
+                    }
+
                     HttpContext.Session.Set<List<Item>>(SiteConstants.SessionCart, Cart);
                 }
+
+                foreach (var item in Cart)
+                {
+                    CartItems.Add(new CartItem()
+                    {
+                        Product = _productService.GetProductById(item.ProductId),
+                        Quantity = item.Quantity
+                    });
+                }
+
+                return Partial("_CartListPartial", CartItems);
             }
         }
 
@@ -222,51 +225,5 @@ namespace Web.Pages.Cart
             }
         }
 
-        public PartialViewResult OnGetPartialListCart()
-        {
-            List<Item> Cart = new();
-            CartItems = new();
-
-            if (User.Identity.IsAuthenticated)
-            {
-                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var order = _orderService.GetUserCurrentOrder(userId);
-
-                if (order != null)
-                {
-                    var orderProducts = _orderProductService.GetOrderCurrentProducts(order.Id);
-
-
-                    foreach (var product in orderProducts)
-                    {
-                        CartItems.Add(new CartItem()
-                        {
-                            Product = _productService.GetProductById(product.ProductId),
-                            Quantity = product.Quantity,
-                        });
-                    }
-                }
-
-                return Partial("_CartListPartial", CartItems);
-            }
-            else
-            { 
-                if (HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart) != null && HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart).Count() > 0)
-                {
-                    Cart = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
-                }
-
-                foreach (var item in Cart)
-                {
-                    CartItems.Add(new CartItem()
-                    {
-                        Product = _productService.GetProductById(item.ProductId),
-                        Quantity = item.Quantity
-                    });
-                }
-
-                return Partial("_CartListPartial", CartItems);
-            }
-        }
     }
 }

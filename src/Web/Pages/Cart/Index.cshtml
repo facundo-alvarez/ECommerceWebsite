@@ -44,83 +44,36 @@
 
             var productId = $(this).attr('id');
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Index","Delete")',
-                data: {
-                    id: productId
-                },
-                success: function() {
+            $.get('@Url.Page("Index","Delete")', { 'id': productId }, function(response) {
+                $('#cartList').html(response);
 
-                    $('#cartList').load('Index?handler=PartialListCart');
-                    $('#cartMenu').load('Index?handler=PartialCart');    
-                    
-                },
-                error: function() {
-
-                    alert('Error');
-
-                }
+                $.get('@Url.Page("Index","PartialCart")', { 'id': productId }, function(response) {
+                    $('#cartMenu').html(response);
+                });
             });
         });
 
     </script>
 
-    <script>
-
-        $(document).on('click', '.removeQuantity', function() {
-
-            var productId = $(this).attr('id');
-            var prodQuantity = $(this).attr('quantity');
-
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Index","RemoveQuantity")',
-                data: {
-                    id: productId,
-                    quantity: prodQuantity
-                },
-                success: function() {
-                    
-                    $('#cartList').load('Index?handler=PartialListCart');
-                 
-                },
-                error: function() {
-
-                    alert('Error');
-
-                }
-            });  
-        });
-
-    </script>
 
     <script>
 
-        $(document).on('click', '.addQuantity', function() {
+       $(document).on('click', '.updateQuantity', function() {
 
-            var productId = $(this).attr('id');
-            var prodQuantity = $(this).attr('quantity');
+           var productId = $(this).attr('id');
+           var updateQ = 0;
 
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Page("Index","AddQuantity")',
-                data: {
-                    id: productId,
-                    quantity: prodQuantity
-                },
-                success: function() {
-                    
-                    $('#cartList').load('Index?handler=PartialListCart');
-                 
-                },
-                error: function() {
+           if ($(this).hasClass('addQuantity')) {
+               updateQ = -1;
+           }
+           else if ($(this).hasClass('removeQuantity')) {
+               updateQ = 1;
+           }
 
-                    alert('Error');
-
-                }
-            });  
-        });
+           $.get('@Url.Page("Index","UpdateQuantity")', { 'id': productId, 'updateQuantity': updateQ }, function(response) {
+               $('#cartList').html(response);
+           });
+       });
 
     </script>
 }

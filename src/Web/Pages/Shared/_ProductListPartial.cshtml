@@ -3,7 +3,7 @@
 
 @foreach(var product in Model)
 {
-    <div class="col">
+    <div class="col prodCard">
         <div class="card mx-2 my-4 border-1" style="width: 12rem;">
             <a asp-page="Details" asp-route-id="@product.Id">
                 <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
@@ -27,7 +27,7 @@
                 }
                 else
                 {
-                    <button prodid="@product.Id" id="addToCart" class="btn btn-primary w-100">Add To Cart </button>
+                    <button proid="@product.Id" id="addToCart" class="btn btn-primary w-100">Add To Cart </button>
                 }
             </div>
         </div> 

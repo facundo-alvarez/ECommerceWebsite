@@ -48,7 +48,12 @@ namespace ApplicationCore.Services
             {
                 if(allProducts.Any(p => p.ProductId == product.ProductId))
                 {
-                    AddProductQuantity(orderId, product.ProductId, product.Quantity);
+                    var productDb = _genericRepository.GetAll().Where(o => o.OrderId == orderId && o.ProductId == product.ProductId).FirstOrDefault();
+
+                    productDb.Quantity += product.Quantity;
+
+                    _genericRepository.Update(productDb);
+                    _genericRepository.Save();
                 }
                 else
                 {
@@ -58,34 +63,27 @@ namespace ApplicationCore.Services
                         OrderId = orderId,
                         Quantity = product.Quantity
                     });
-
                 }
             }
             _genericRepository.Save();
         }
 
-        public void AddProductQuantity(int orderId, int productId, int quantity)
+        public void UpdateProductQuantity(int orderId, int productId, int quantity)
         {
             var product = _genericRepository.GetAll().Where(o => o.OrderId == orderId && o.ProductId == productId).FirstOrDefault();
 
-            if (product.Quantity < 100)
-            {
-                product.Quantity += quantity;
-                _genericRepository.Update(product);
-                _genericRepository.Save();
-            }
-        }
+            product.Quantity += quantity;
 
-        public void RemoveProductQuantity(int orderId, int productId, int quantity)
-        {
-            var product = _genericRepository.GetAll().Where(o => o.OrderId == orderId && o.ProductId == productId).FirstOrDefault();
-
-            if (product.Quantity > 1)
+            if (product.Quantity > 100)
             {
-                product.Quantity -= quantity;
-                _genericRepository.Update(product);
-                _genericRepository.Save();
+                product.Quantity = 100;
             }
+            if (product.Quantity < 1)
+            {
+                product.Quantity = 1;
+            }
+            _genericRepository.Update(product);
+            _genericRepository.Save();
         }
     }
 }

@@ -163,7 +163,12 @@ namespace ApplicationCore.Specifications
         }
         public override Expression<Func<Product, bool>> ToExpression()
         {
-            return product => product.Category.Name == _category;
+            if(_category != "all")
+            {
+                return product => product.Category.Name == _category;
+            }
+
+            return product => product.Category.Name == product.Category.Name;
         }
     }
 }

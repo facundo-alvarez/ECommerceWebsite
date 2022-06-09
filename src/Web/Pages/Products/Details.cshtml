@@ -1,96 +1,106 @@
 ﻿@page "{id}"
 @model Web.Pages.Products.DetailsModel
 
-<div class="container-lg">
+<div class="container-xl p-5">
 
-    <div class="row">
-        <div class="col">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-light p-2 rounded-0">
-                    <li class="breadcrumb-item"><a asp-page="/Products/Index" asp-route-category="All">Products</a></li>
-                    <li class="breadcrumb-item"><a asp-page="/Products/Index" asp-route-category="@Model.Category.Name">@Model.Category.Name</a></li>
-                </ol>
-            </nav>
-        </div>    
-    </div>
+                    
 
-    <div class="row mb-5">
-        <div class="col d-flex justify-content-end">
+    <div class="row shadow-sm bg-white align-items-center mb-5 py-5 pb-5">
+
+        <div class="col-md d-flex justify-content-center">
+            @if(!Model.Product.InStock)
+            {
+                <div class="badge bg-warning fs-5" style="position:absolute">Out of stock</div>   
+            }
              <img class="mx-3" style="height: auto" src="@SiteConstants.ImagePath@Model.Product.Image" asp-append-version="true" />
         </div>
-        <div class="col">
 
-            <h1>@Model.Product.Name</h1>
-            <p>Quantity: @Model.Product.Quantity</p>
-            @if(Model.Product.IsOnSale)
-            {
-                <span class="card-text text-muted text-decoration-line-through">@Model.Product.Price.ToString("C")</span>
-                <h3>@Model.Product.SalePrice?.ToString("C")</h3>
-            }
-            else
-            {
-                <h3>@Model.Product.Price</h3>
-            }
-            @if(Model.Product.InStock)
-            {
-                <input id="quantityInput" type="number" min="1" max="50" class="form-control mb-3" style="width: 4rem" value="1"/>
-                <button id="@Model.Product.Id" class="btn btn-primary addToCart"><i class="bi bi-cart-plus"></i> Add To Cart</button>
-                
-                @if(Model.IsAlreadyFavorite)
+        <div class="col text-center text-md-start">
+            <a class="text-reset text-decoration-none" asp-page="/Index">Home &raquo;</a>
+            <a class="text-reset text-decoration-none" asp-page="/Products/Index" asp-route-category="@Model.Category.Name">@Model.Category.Name</a>
+            <h3 class="mb-3">@Model.Product.Name</h3>
+            <div class="d-flex mb-3 justify-content-center justify-content-md-start">
+                @if(Model.Product.IsOnSale)
                 {
-                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Remove From Favorites</button>   
+                    <span class=" align-self-center me-2 card-text text-muted fw-lighter text-decoration-line-through">@Model.Product.Price.ToString("C")</span>
+                    <div class="fs-4">@Model.Product.SalePrice?.ToString("C")</div>
                 }
                 else
                 {
-                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Add To Favorites</button>    
+                    <div class="fs-4">@Model.Product.Price.ToString("C")</div>
                 }
+                
+                <div class="align-self-center ms-2">
+                    <span class="badge rounded-pill bg-secondary">@Model.Product.Quantity</span>
+                </div>
+            </div>
+            <h6>Brand: <span class="text-muted fw-light">Loyal Brand</span></h6>
+            <h6>Category: <span class="text-muted fw-light">@Model.Category.Name</span></h6>
+            @if (Model.Tags != null)
+            {
+                <h6>Tags: 
+                    <span class="text-muted fw-light">
+                        @foreach(var tag in Model.Tags)
+                        {
+                            <span>@tag</span>
+                        }
+                    </span>
+                </h6>
+            }
+            <div class="d-flex my-5 justify-content-center justify-content-md-start">
+                @if(Model.Product.InStock)
+                {   
+                    <div class="input-group me-3" style="width:auto">
+                        <button id="removeQuantity" class="btn btn-success"><i class="bi bi-dash-lg"></i></button>
+                        <input disabled id="quantityInput" type="number"  min="1" max="50" class="form-control" value="1"/>
+                        <button id="addQuantity" class="btn btn-success"><i class="bi bi-plus-lg"></i></button>
+                    </div>
+                    <button id="@Model.Product.Id" class="btn btn-lg btn-success me-2 addToCart"><i class="bi bi-cart-plus"></i></button>
+                
+                    @if(Model.IsAlreadyFavorite)
+                    {
+                        <button class="btn btn-lg btn-success" id="addToFavorites"><i class="bi bi-heart"></i></button>   
+                    }
+                    else
+                    {
+                        <button class="btn btn-lg btn-success" id="addToFavorites"><i class="bi bi-heart-fill"></i></button>    
+                    }
               
-            }
-            else
-            {
-                <button disabled class="btn btn-primary">Out Of Stock</button>       
-                
-                @if(Model.IsAlreadyFavorite)
-                {
-                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Remove From Favorites</button>   
                 }
                 else
                 {
-                    <button class="btn btn-primary" id="addToFavorites"><i class="bi bi-heart"></i> Add To Favorites</button>    
+                    <button disabled class="btn btn-lg btn-success me-2"><i class="bi bi-cart-plus"></i></button>       
+                
+                    @if(Model.IsAlreadyFavorite)
+                    {
+                        <button class="btn btn-lg btn-success" id="addToFavorites"><i class="bi bi-heart"></i></button>   
+                    }
+                    else
+                    {
+                        <button class="btn btn-lg btn-success" id="addToFavorites"><i class="bi bi-heart-fill"></i></button>    
+                    }
                 }
-            }
+
+            </div>
                 
         </div>
     </div>
 
-    @if (Model.Tags != null)
-    {
-        <div class="row mb-5">
-            <div class="col">
-                <h6>Tags</h6>
-                @foreach(var tag in Model.Tags)
-                {
-                    <span class="badge bg-secondary">@tag</span>
-                }
-            </div>
-        </div>   
-    }
-    
-
-    <div class="row" style="height: 25rem">
+   
+    <div class="row p-4 py-5 shadow-sm bg-white">
         <div class="col">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
+                    <a class="nav-link fw-bold active text-reset" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="ingridients-tab" data-toggle="tab" href="#ingridients" role="tab" aria-controls="ingridients" aria-selected="false">Ingridients</a>
+                    <a class="nav-link fw-bold text-reset" id="ingridients-tab" data-toggle="tab" href="#ingridients" role="tab" aria-controls="ingridients" aria-selected="false">Ingridients</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews</a>
+                    <a class="nav-link fw-bold text-reset" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews</a>
                 </li>
             </ul>
-            <div class="tab-content" id="myTabContent">
+            <div class="tab-content text-muted px-3 py-5" id="myTabContent">
                 <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">@Model.Product.Description</div>
                 <div class="tab-pane fade" id="ingridients" role="tabpanel" aria-labelledby="ingridients-tab">@Model.Product.Ingredients</div>
                 <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">...</div>
@@ -99,41 +109,48 @@
     </div>
 
 
-    <h3>You May Also Like</h3>
-
-    <div class="row">
-        <div class="col">
-            <div class="d-flex justify-content-center">
-                @foreach(var product in Model.RelatedProducts)
+    <div class="row p-4 my-5 shadow-sm bg-white justify-content-center">
+        <div class="display-6 mb-5">Related Products</div>
+        @foreach(var product in Model.RelatedProducts)
+        {
+            <div class="card border-1 rounded-0 p-3 text-center " style="width: 15rem;">
+                @if(!product.InStock)
                 {
-                    <div class="col">
-                        <div class="card mx-2 my-4 border-1" style="width: 12rem;">
-                            <a asp-page="Details" asp-route-id="@product.Id">
-                                <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
-                            </a>
-                            <div class="card-body">
-                                @if(product.IsOnSale)
-                                {
-                                    <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
-                                    <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
-                                }
-                                else
-                                {
-                                    <h6 class="card-text">@product.Price.ToString("C")</h6>
-                                }
-                                <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
-                                    <h5 class="card-title">@product.Name</h5>
-                                </a>
-
-                                <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-primary">View</a>
-                                
-                            </div>
-                        </div> 
-                        
-                    </div>
+                    <div class="badge bg-dark" style="position:absolute">Out of stock</div>         
                 }
-            </div>
-        </div>
+                <a asp-page="Details" asp-route-id="@product.Id">
+                    <img class="card-img-top align-items-stretch" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+                </a>
+                <div class="card-body">
+                    <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
+                        <h5 class="card-title">@product.Name</h5>
+                    </a>
+                    <div class="d-flex justify-content-center">
+                        @if(product.IsOnSale)
+                        {
+                            <span class="card-text text-muted fs-6 text-decoration-line-through">@product.Price.ToString("C")</span>
+                            <h6 class="card-text ms-2 fs-5">@product.SalePrice?.ToString("C")</h6>
+                        }
+                        else
+                        {
+                            <h6 class="card-text fs-5">@product.Price.ToString("C")</h6>
+                        }
+                    </div>
+                    <div class="mt-4">
+                        @if(!product.InStock)
+                        {
+                            <button disabled class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i></button>
+                        }
+                        else
+                        {
+                            <button id="@product.Id" class="btn btn-outline-secondary addToCart"><i class="bi bi-plus-lg"></i></button>
+                        }
+                        <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-outline-secondary"><i class="bi bi-search"></i></a>
+                        <button proid="@product.Id" id="addToFavorites" class="btn btn-outline-secondary"><i class="bi bi-heart"></i></button>
+                    </div>
+                </div>
+            </div> 
+        }
     </div>
 </div>
 
@@ -166,11 +183,11 @@
                         
                         if (result == "False") {
                             
-                            $('#addToFavorites').html("Add To Favorites").prepend('<i class="bi bi-heart"></i>');
+                            $('#addToFavorites').html('<i class="bi bi-heart-fill"></i>');
                         }
                         if (result == "True") {
                             
-                            $('#addToFavorites').html("Remove From Favorites").prepend('<i class="bi bi-heart"></i>');
+                            $('#addToFavorites').html('<i class="bi bi-heart"></i>');
                         }
                         if (result == "Not Autenticated")
                         {
@@ -189,14 +206,39 @@
 
     <script>
 
-        $(document).on('click', 'button', function() {
+        $(document).on('click', '.addToCart', function() {
 
             var productQuantity = $('#quantityInput').val();
             var productId = $(this).attr('id');
 
-            $.get('@Url.Page("Details","AddToCart")', { 'id': productId, 'quantity': productQuantity }, function(result) {
-                $('#cartMenu').html(result);
+            $.get('@Url.Page("Details","AddToCart")', { 'prodId': productId, 'quantity': productQuantity }, function(result) {
+                $('.cartMenu').html(result);
             });
+        });
+
+    </script>
+
+    <script>
+        $(document).on('click','#removeQuantity', function(){
+
+            var quantity = parseInt($('#quantityInput').val());
+            
+            if (quantity != 1) {
+                quantity--;
+                $('#quantityInput').val(quantity);
+            }
+        });
+
+    </script>
+
+    <script>
+        $(document).on('click','#addQuantity', function(){
+
+            var quantity = parseInt($('#quantityInput').val());
+            if (quantity != 100) {
+                quantity++;
+                $('#quantityInput').val(quantity);
+            }
         });
 
     </script>

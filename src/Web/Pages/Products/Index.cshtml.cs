@@ -39,7 +39,7 @@ namespace Web.Pages.Products
         public IReadOnlyList<Product> ProductList { get; set; }
 
         int CurrentPage = 1;
-        int PageSize = 6;
+        int PageSize = 8;
 
 
         public void OnGet()
@@ -48,6 +48,7 @@ namespace Web.Pages.Products
 
             HttpContext.Session.SetInt32(SiteConstants.CurrentPage, CurrentPage);
             HttpContext.Session.Remove(SiteConstants.Sorting);
+            HttpContext.Session.Remove(SiteConstants.ProductsFilters);
 
             ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
         }

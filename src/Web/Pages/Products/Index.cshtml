@@ -2,6 +2,11 @@
 @model Web.Pages.Products.IndexModel
 @Html.AntiForgeryToken()
 
+@{
+    var categoryName = Model.Category;
+    string extension = ".jpg";
+    string imageName = categoryName + extension;
+}
 
 <style>
     .desc {
@@ -13,52 +18,57 @@
     }
 </style>
 
-<div class="container-lg">
+<div class="container mb-5">
+
+    <div class="row justify-content-end my-3">
+        <div class="col-3">
+            <select id="sortingSelect" class="form-select">
+                <option selected disabled>-- Sort by --</option>
+                <option value="1">Sort by price: low to high</option>
+                <option value="2">Sort by price: high to low</option>
+            </select>
+        </div>
+    </div>
+
     <div class="row">
 
-        <div class="col-3 border border-2 rounded-3 my-4">
-            <div class="row">
-                <h4>Price Filter</h4>
-                <div class="col">
-                    <input id="minPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="1"/>
+        <div class="col-lg-3">
+            <div class=" bg-white shadow-sm  p-4">
+                <div class="row">
+                    <h6>Price</h6>
+                    <div class="d-flex">
+                        <input id="minPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="1"/>
+                        <input id="maxPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="100"/>
+                    </div>
                 </div>
-                <div class="col">
-                    <input id="maxPriceInput" type="number" class="form-control priceFilter" min="1" max="100" placeholder="100"/>
+                <div class="row mt-4">
+                    <h6>Availability</h6>
+                    <div class="form-check ms-3">
+                      <input id="onSaleInput" class="form-check-input checkFilter" type="checkbox">
+                      <label class="form-check-label" for="flexCheckDefault">On Sale</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="form-check">
-                  <input id="onSaleInput" class="form-check-input checkFilter" type="checkbox">
-                  <label class="form-check-label" for="flexCheckDefault">On Sale</label>
+                <div class="row mt-4">
+                    <h6>Stock</h6>
+                    <div class="form-check ms-3">
+                      <input id="onStockInput" class="form-check-input checkFilter" type="checkbox">
+                      <label class="form-check-label" for="flexCheckDefault">On Stock</label>
+                    </div>
                 </div>
-                <div class="form-check">
-                  <input id="onStockInput" class="form-check-input checkFilter" type="checkbox">
-                  <label class="form-check-label" for="flexCheckDefault">On Stock</label>
-                </div>
-            </div>
 
-            <button id="cleanFilters" class="btn btn-primary">Clean Filters</button>             
+                <button id="cleanFilters" class="btn btn-outline-danger mt-4">Clean Filters</button>             
+            </div>
         </div>
 
-        <nav class="col-9 text-center">
-            <div class="row justify-content-end">
-                <div class="col-3">
-                    <select id="sortingSelect" class="form-select">
-                        <option selected disabled>-- Select --</option>
-                        <option value="1">Price Ascending</option>
-                        <option value="2">Price Descending</option>
-                    </select>
+        <div class="col-lg-9">
 
-                </div>
-            </div>
-
-            <div class="row row-cols-lg-3" id="productList">
+            <div class="row justify-content-center" id="productList">
                 <partial name="_ProductListPartial" model="Model.ProductList"></partial>
             </div>
-
-            <button id="loadMore" class="btn btn-outline-primary">Load More</button>    
-            
-        </nav>
+            <div class="row justify-content-center">
+                <button id="loadMore" class="btn btn-outline-secondary my-4 w-25">Load More</button>    
+            </div>
+        </div>
     </div>
 </div>
 
@@ -73,7 +83,7 @@
             var productId = $(this).attr('proid');
 
             $.get('@Url.Page("Index","AddToCart")', { 'id': parseInt(productId) }, function(response) {
-                $('#cartMenu').html(response);
+                $('.cartMenu').html(response);
             });
         });
 
@@ -191,6 +201,7 @@
                     success: function(response) {
                         $('#productList').html(response);
                         $('#loadMore').prop("disabled", false).html('Load more');
+
                     },
                     failure: function() {
                         alert("failure");

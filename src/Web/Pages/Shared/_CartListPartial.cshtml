@@ -9,19 +9,20 @@
 {
     <div class="row">
         <div class="col text-center">
-            <h3>Cart is empty</h3>
+            <h4>Cart is empty</h4>
         </div>
     </div>
 }
 else
 {
     <div class="row">
-        <table class="table table-hover">
+        <table class="table align-middle">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
+                    <th class="text-muted">Product</th>
+                    <th class="text-muted">Quantity</th>
+                    <th class="text-muted text-end">Subtotal</th>
+                    <th class="text-muted text-end">Remove</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,9 +33,9 @@ else
                         total += cartItem.Product.Price * cartItem.Quantity;
 
                         <tr>
-                            <td class="align-middle">
+                            <td>
                                 <div class="row">
-                                    <div class="col-3">
+                                    <div class="col-md-3">
                                         <img style="height: 4rem" src="@SiteConstants.ImagePath@cartItem.Product.Image" asp-append-version="true">
                                     </div>
                                     <div class="col">
@@ -43,16 +44,14 @@ else
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle" id="cartQuantityPartial">
+                            <td id="cartQuantityPartial">
                                 <partial name="_CartQuantityPartial" model="@cartItem"></partial>
                             </td>
-                            <td class="align-middle">
-                                <div class="row">
-                                    <div class="col-8">@cartItem.Total.ToString("C")</div>
-                                    <div class="col">
-                                        <button id="@cartItem.Product.Id" class="btn align-middle ms-5 deleteButton" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </div>                                   
+                            <td class="text-end">
+                                @cartItem.Total.ToString("C")
+                            </td>
+                            <td class="text-end">
+                                <button id="@cartItem.Product.Id" class="btn align-middle ms-5 deleteButton" style="font-size:1.25rem"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
                     }
@@ -60,17 +59,17 @@ else
             </tbody>
         </table>
     </div>     
-    <div class="row border-top justify-content-end">
-        <div class="col-4 mt-4">
-            <h4>Total: @total.ToString("C")</h4>
+    <div class="row justify-content-end text-end my-5">
+        <div class="col-6 mt-4">
+            <h4>Subtotal: @total.ToString("C")</h4>
             <p>Taxes and shipping calculated at check out </p>
             @if(User.Identity.IsAuthenticated)
             {
-                <a class="btn btn-primary" asp-page="Summary">Check Out</a>
+                <a class="btn btn-success" asp-page="Summary">Checkout</a>
             }
             else
             {
-                <a class="btn btn-primary" asp-page="Summary">Loggin To Checkout</a>
+                <a class="btn btn-success" asp-page="Summary">Loggin to checkout</a>
             }
         </div>
     </div>

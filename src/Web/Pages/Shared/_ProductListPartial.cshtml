@@ -3,34 +3,42 @@
 
 @foreach(var product in Model)
 {
-    <div class="col prodCard">
-        <div class="card mx-2 my-4 border-1" style="width: 12rem;">
-            <a asp-page="Details" asp-route-id="@product.Id">
-                <img class="card-img-top" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+    <div class="card border-1 rounded-0 p-3 text-center " style="width: 15rem;">
+        @if(!product.InStock)
+        {
+            <div class="badge bg-dark" style="position:absolute">Out of stock</div>         
+        }
+        <a asp-page="Details" asp-route-id="@product.Id">
+            <img class="card-img-top align-items-stretch" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">                              
+        </a>
+        <div class="card-body">
+            <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
+                <h5 class="card-title">@product.Name</h5>
             </a>
-            <div class="card-body">
+            <div class="d-flex justify-content-center">
                 @if(product.IsOnSale)
                 {
-                    <span class="card-text text-muted text-decoration-line-through">@product.Price.ToString("C")</span>
-                    <h6 class="card-text">@product.SalePrice?.ToString("C")</h6>
+                    <span class="card-text text-muted fs-6 text-decoration-line-through">@product.Price.ToString("C")</span>
+                    <h6 class="card-text ms-2 fs-5">@product.SalePrice?.ToString("C")</h6>
                 }
                 else
                 {
-                    <h6 class="card-text">@product.Price.ToString("C")</h6>
-                }
-                <a asp-page="Details" asp-route-id="@product.Id" class="text-decoration-none">
-                    <h5 class="card-title">@product.Name</h5>
-                </a>
-                @if(!product.InStock)
-                {
-                    <button disabled class="btn btn-primary w-100">Out Of Stock</button>
-                }
-                else
-                {
-                    <button proid="@product.Id" id="addToCart" class="btn btn-primary w-100">Add To Cart </button>
+                    <h6 class="card-text fs-5">@product.Price.ToString("C")</h6>
                 }
             </div>
-        </div> 
-    </div>
+            <div class="mt-4">
+                @if(!product.InStock)
+                {
+                     <button disabled proid="@product.Id" id="addToCart" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i></button>
+                }
+                else
+                {
+                    <button proid="@product.Id" id="addToCart" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i></button>
+                }
+                <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-outline-secondary"><i class="bi bi-search"></i></a>
+                <button proid="@product.Id" id="addToFavorites" class="btn btn-outline-secondary"><i class="bi bi-heart"></i></button>
+            </div>
+        </div>
+    </div> 
 }
 

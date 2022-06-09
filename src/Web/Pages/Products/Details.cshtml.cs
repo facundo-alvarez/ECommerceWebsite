@@ -59,7 +59,7 @@ namespace Web.Pages.Products
         }
 
 
-        public PartialViewResult OnGetAddToCart(int id, int quantity = 1)
+        public PartialViewResult OnGetAddToCart(int prodId, int quantity = 1)
         {
             List<Item> cartItems = new();
 
@@ -67,7 +67,7 @@ namespace Web.Pages.Products
             {
                 cartItems.Add(new Item()
                 {
-                    ProductId = id,
+                    ProductId = prodId,
                     Quantity = quantity,
                 });
                 var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -118,15 +118,15 @@ namespace Web.Pages.Products
                     cartItems = HttpContext.Session.Get<List<Item>>(SiteConstants.SessionCart);
                 }
 
-                if (cartItems.Any(p => p.ProductId == id))
+                if (cartItems.Any(p => p.ProductId == prodId))
                 {
-                    cartItems.FirstOrDefault(p => p.ProductId == id).Quantity += quantity;
+                    cartItems.FirstOrDefault(p => p.ProductId == prodId).Quantity += quantity;
                 }
                 else
                 {
                     cartItems.Add(new Item()
                     {
-                        ProductId = id,
+                        ProductId = prodId,
                         Quantity = quantity
                     });
                 }
@@ -137,7 +137,7 @@ namespace Web.Pages.Products
             }
 
 
-            Product = _productService.GetProductById(id);
+            Product = _productService.GetProductById(prodId);
             Category = _categoryService.GetCategories().Where(c => c.Id == Product.CategoryId).FirstOrDefault();
             RelatedProducts = _productService.GetRelatedProducts(Category).Take(4);
             Tags = Product.Tags.Split(',').ToList();

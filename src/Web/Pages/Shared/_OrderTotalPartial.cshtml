@@ -1,24 +1,46 @@
 ﻿@model ApplicationCore.Entities.Order   
 
+@{
+    int cero = 0;
+    decimal discountTotal = Model.Total - Model.SubTotal;
+}
 
 @if (Model.HasCupon)
 {
     <div class="row">
         <div class="col">
-            <h6>Subtotal: </h6>
-            <del>@Model.SubTotal</del>
+            <h6>Subtotal</h6>
+            <p class="text-muted">@Model.SubTotal.ToString("C")</p>
 
-            <h5>Total: </h5>
-            <p>@Model.Total</p>
-        </div>
-        <div class="col">
-            <p>Code: @Model.HasCupon </p>
-            <button id="removeCupon" class="btn btn-danger">Remove Cupon</button>
+            <h6>Discount</h6>
+            <p class="text-muted">@discountTotal.ToString("C")</p>
+
+            <h6>Shipping</h6>
+            <p class="text-muted">@cero.ToString("C")</p>
+
+            <h6>Tax</h6>
+            <p class="text-muted">@cero.ToString("C")</p>
+
+            <h4 class="border-top border-2 pt-2">Total</h4>
+            <h5>@Model.Total.ToString("C")</h5>
         </div>
     </div> 
 }
 else
 {
-    <h5>Total: </h5>
-    <p>@Model.Total</p>
+   <div class="row">
+        <div class="col">
+            <h6>Subtotal</h6>
+            <p class="text-muted">@Model.SubTotal.ToString("C")</p>
+
+            <h6>Shipping</h6>
+            <p class="text-muted">@cero.ToString("C")</p>
+
+            <h6>Tax</h6>
+            <p class="text-muted">@cero.ToString("C")</p>
+
+            <h4 class="border-top border-2 py-4">Total</h4>
+            <h5>@Model.Total.ToString("C")</h5>
+        </div>
+    </div> 
 }

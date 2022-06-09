@@ -50,64 +50,192 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-lg">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Products</a>
-                            <ul class="dropdown-menu">
-                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/Products/Index" asp-route-category="All">All Products</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/Products/Index" asp-route-category="Fruits">Fruits</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/Products/Index" asp-route-category="Vegetables">Vegetables</a>
-                                </li>  
-                            </ul>
-                        </li>
-                        <li>
-                            <div id="cartMenu">
-                                <partial name="_CartPartial" model="@number" /> 
-                            </div>
-                        </li>
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            if (User.IsInRole(SiteConstants.AdminRole))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/Admin/Index">Admin Panel</a>
-                                </li>  
-                            }
-                        }
-                    </ul>
-                                      
-                    <partial name="_LoginPartial"/>
+
+        <div class="d-flex pt-2 justify-content-end">
+            <div class="btn-group ms-4 d-flex align-self-center">
+                <a asp-page="/Cart/Index" class="d-md-none ps-2 text-success cartMenu">
+                    <partial name="_CartPartial" model="@number" /> 
+                </a>
+                <a class="d-md-none ps-3" asp-page="/Favorites/Index"><i class="bi bi-heart-fill text-success"></i></a>
+                <a class="d-md-none px-2" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-fill text-success"></i></a>
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole(SiteConstants.AdminRole))
+                {
+                    <a class="nav-link text-dark" asp-page="/Admin/Index">Admin Panel</a>
+                }
+            }
+            <partial name="_LoginPartial"/>
+        </div>
+
+        <div class="container-fluid p-3 shadow mb-3">
+            <div class="container-md mt-1">
+
+                <div class="d-flex align-items-center">
+                    
+                    <a class="me-auto" asp-page="/Index"><img src="~/logo.png" width="150" /></a>
+
+                    <div class="d-none d-md-flex input-group">
+                        <input class="form-control " type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-success" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+
+                    <nav class="navbar navbar-expand-md navbar-light">
+                        <button class="navbar-toggler ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </nav>
+                              
+                    <div class="btn-group ms-4">
+                        <a asp-page="/Cart/Index" class="d-none d-md-block btn btn-outline-success cartMenu">
+                            <partial name="_CartPartial" model="@number" /> 
+                        </a>
+                        <a class="d-none d-md-block btn btn-outline-success" asp-page="/Favorites/Index"><i class="bi bi-heart-fill"></i></a>
+                        <a class="d-none d-md-block btn btn-outline-success" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-fill"></i></a>
+                    </div>
 
                 </div>
+
+                <nav class="navbar navbar-expand-md navbar-light justify-content-end">
+                    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+
+                        <ul class="navbar-nav mb-2 mb-lg-0 text-center fs-5 fw-semibold">
+                        
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Products/Index" asp-route-category="Fruits">Fruits</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Products/Index" asp-route-category="Vegetables">Vegetables</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Dairy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Cheese</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Bakery</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Grocery</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Frozen</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="#">Drink</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </nav>
+            
             </div>
-        </nav>
+        </div>
     </header>
-    <div>
-        <main role="main" class="pb-3">
+    <div class="p-4 bg-light">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - Web - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer>
+        <div class="container mt-5 pb-4 text-muted">
+            <div class="row pb-5 mb-5 border-bottom border-1 text-center">
+                <div class="col-md-3 text-md-start">
+                    <h1><i class="bi bi-cart4 float-start pt-1 pe-3 d-none d-md-block"></i></h1>
+                    <h5>100% Secure Payments</h5>
+                    <p>Payment protection</p>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h1><i class="bi bi-headset float-start pt-2 pe-3 d-none d-md-block"></i></h1>
+                    <h5>Support</h5>
+                    <p>24/7 Online chat</p>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h1><i class="bi bi-truck float-start pt-2 pe-3 d-none d-md-block"></i></h1>
+                    <h5>Delivery</h5>
+                    <p>Shipping assurance</p>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h1><i class="bi bi-recycle float-start pt-2 pe-3 d-none d-md-block"></i></h1>
+                    <h5>Return and Refound</h5>
+                    <p class="text-muted">100% money back</p>
+                </div>
+            
+            </div>
+
+            <div class="row my-4 text-center">
+                <div class="col-md-3 text-md-start">
+                    <h5>FRUIT &amp; VEGETABLES</h5>
+                    <ul class="list-unstyled">
+                        <li><a class="text-decoration-none text-reset" href="#">Fresh Vegetables</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Summer Fruits</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Fresh Fruits</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Exotic Fruits</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Bananas</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Packaged</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Organic Leaves</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h5>BREAKFAST &amp; DAIRY</h5>
+                    <ul class="list-unstyled">
+                        <li><a class="text-decoration-none text-reset" href="#">Milk</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Cheese</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Goat Products</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Special Ocations</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Raw Milk</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Handmade Butter</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Milk Proteins</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h5>BREAD &amp; BAKERY</h5>
+                    <ul class="list-unstyled">
+                        <li><a class="text-decoration-none text-reset" href="#">Bread</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Pastries and Sweets</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">French Baguette</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Organic Flour</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Mother Bread</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Special Yeast</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Ready to Make Bread</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 text-md-start">
+                    <h5>ORGANIC PRODUCTS</h5>
+                    <ul class="list-unstyled">
+                        <li><a class="text-decoration-none text-reset" href="#">Seeds and Nuts</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Roasted Peanuts</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Sweet Almonds</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Sugar Cane</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Organic Certified</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Eggs from Farms</a></li>
+                        <li><a class="text-decoration-none text-reset" href="#">Exotic Organic</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-5 pt-5 pb-3 border-top border-1">
+                <div class="col-4">
+                    <a asp-page="/Index"><img src="~/logo.png" width="150" /></a>
+                </div>
+                <div class="col d-flex justify-content-end align-items-center">
+                    <h1><a href="#"><i class="bi bi-facebook" style="color:#4267B2"></i></a></h1>
+                    <h1><a href="#"><i class="bi bi-twitter ms-2" style="color:#1DA1F2"></i></a></h1>
+                    <h1><a href="#"><i class="bi bi-instagram ms-2" style="color:#833AB4"></i></a></h1>
+                    <h1><a href="#"><i class="bi bi-linkedin ms-2" style="color:#0077b5"></i></a></h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <p>	&copy; Copyright 2021 All rights reserved.</p>
+            </div>
+           
         </div>
+
+        
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

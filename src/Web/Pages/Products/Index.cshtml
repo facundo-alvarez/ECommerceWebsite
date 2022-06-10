@@ -21,7 +21,7 @@
 <div class="container mb-5">
 
     <div class="row justify-content-end my-3">
-        <div class="col-3">
+        <div class="col-md-3">
             <select id="sortingSelect" class="form-select">
                 <option selected disabled>-- Sort by --</option>
                 <option value="1">Sort by price: low to high</option>
@@ -78,12 +78,13 @@
     @*Add to cart*@
      <script>
 
-        $(document).on('click', '#addToCart', function() {
+        $(document).on('click', '.addToCart', function() {
 
-            var productId = $(this).attr('proid');
+            var productId = $(this).attr('id');
 
             $.get('@Url.Page("Index","AddToCart")', { 'id': parseInt(productId) }, function(response) {
                 $('.cartMenu').html(response);
+                $('#'+productId+ '.addToCart').html('<i class="bi bi-check-lg"></i>');
             });
         });
 
@@ -247,6 +248,30 @@
                 $('#loadMore').prop("disabled", false).html('Load more');
             });
         });      
+
+    </script>
+
+    @*Favorites*@
+     <script>
+
+        $('.addToFavorites').click(function() {
+
+            var id = $(this).attr('id');
+
+            $.get('@Url.Page("Index","AddToFavorites")', {'id': id}, function(result) {
+
+                if (result == "Added") {
+                    $('#'+id+ '.addToFavorites').html('<i class="bi bi-heart"></i>');                            
+                }
+                if (result == "Removed") {
+                    $('#'+id+ '.addToFavorites').html('<i class="bi bi-heart-fill"></i>');
+                }
+                if (result == "Not Autenticated")
+                {
+                    alert('You need to login')
+                }
+            });
+        });
 
     </script>
 }

@@ -1,5 +1,20 @@
 ﻿@using ApplicationCore.Entities
+@using ApplicationCore.Interfaces
+@using System.Security.Claims
 @model IReadOnlyList<Product>
+@inject IFavoriteService favoriteService
+@inject IHttpContextAccessor httpContext
+
+
+@{
+    string userId = "";
+
+    if(User.Identity.IsAuthenticated)
+    {
+        userId = httpContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    }
+    var userFavorites = favoriteService.GetUserProducts(userId);
+}
 
 @foreach(var product in Model)
 {
@@ -29,14 +44,21 @@
             <div class="mt-4">
                 @if(!product.InStock)
                 {
-                     <button disabled proid="@product.Id" id="addToCart" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i></button>
+                     <button disabled id="@product.Id" class="btn btn-outline-secondary addToCart"><i class="bi bi-plus-lg"></i></button>
                 }
                 else
                 {
-                    <button proid="@product.Id" id="addToCart" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i></button>
+                    <button id="@product.Id" class="btn btn-outline-secondary addToCart"><i class="bi bi-plus-lg"></i></button>
                 }
-                <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-outline-secondary"><i class="bi bi-search"></i></a>
-                <button proid="@product.Id" id="addToFavorites" class="btn btn-outline-secondary"><i class="bi bi-heart"></i></button>
+                <a asp-page="Details" asp-route-id="@product.Id" class="btn btn-outline-secondary"><i class="bi bi-eye-fill"></i></a>
+                @if(User.Identity.IsAuthenticated && userFavorites.Any(p=> p.ProductId == product.Id))
+                {
+                    <button id="@product.Id" class="btn btn-outline-secondary addToFavorites"><i class="bi bi-heart"></i></button>
+                }
+                else
+                {
+                    <button id="@product.Id" class="btn btn-outline-secondary addToFavorites"><i class="bi bi-heart-fill"></i></button>
+                }
             </div>
         </div>
     </div> 

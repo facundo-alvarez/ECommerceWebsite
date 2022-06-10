@@ -1,0 +1,161 @@
+﻿@page
+@model Web.Pages.Dashboard.IndexModel
+
+<div class="container-fluid p-0 my-5" style="background:url(../images/dashboard-banner.jpg)">
+    <div class="container">
+        <div class="row text-center">
+            <div class="mt-5 pt-5"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container p-4 my-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="p-4 bg-white rounded-3 shadow-sm">
+                <div class="d-flex justify-content-center">
+                    <img src="/images/placeholder.png" class="p-5" style="max-width:18rem"/>
+                </div>
+                <ul class="list-group-flush p-4">
+                    <li class="list-group-item pb-3">
+                        <div class="d-flex">
+                            <button id="dashboard" class="text-reset text-decoration-none btn m-0 p-0">
+                                <i class="bi bi-house-door btn btn-primary"></i>
+                                <span class="fw-bold">Dashboard</span>
+                            </button>
+                        </div>
+                    </li>
+                    <li class="list-group-item pb-3">
+                         <button id="address" class="text-reset text-decoration-none btn m-0 p-0">
+                            <i class="bi bi-geo-alt btn btn-success"></i>
+                            <span class="fw-bold">Addresses</span>
+                         </button>
+                    </li>
+                    <li class="list-group-item pb-3">
+                        <button id="orders" class="text-reset text-decoration-none btn m-0 p-0">
+                            <i class="bi bi-truck btn btn-warning"></i>
+                            <span class="fw-bold">Orders</span>
+                        </button>
+                    </li>
+                    <li class="list-group-item pb-3">
+                        <button id="favorites"  class="text-reset text-decoration-none btn m-0 p-0">
+                            <i class="bi bi-award btn btn-danger"></i>
+                            <span class="fw-bold">Favorites</span>
+                        </button>
+                    </li>
+                    <li class="list-group-item pb-3">
+
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index" class="text-reset text-decoration-none">
+                            <i class="bi bi-gear btn btn-dark"></i>
+                            <span class="fw-bold">Configuration</span>
+                        </a>
+                    </li>
+                    <li class="list-group-item pb-3">
+                        <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
+                            <button asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Index", new { area = "" })"  class="text-reset text-decoration-none btn m-0 p-0">
+                                <i class="bi bi-door-open btn btn-secondary"></i>
+                                <span class="fw-bold">Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg my-5 my-lg-0 ms-lg-3">
+
+            <div class="row bg-white shadow-sm rounded-3 p-5">
+                <div class="display-4 text-center fw-normal mb-4">Dashboard</div>
+                <div class="d-flex justify-content-center col-xl-3 col-lg-6">
+                    <div class="card border-success mb-3 text-center">
+                        <div class="card-body text-success">
+                            <h5 class="card-title">Orders</h5>
+                            <p class="card-text">Some quick example text to build.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center col-xl-3 col-lg-6">
+                    <div class="card border-success mb-3 text-center">
+                        <div class="card-body text-success">
+                            <h5 class="card-title">Shipping</h5>
+                            <p class="card-text">Some quick example text to build.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center col-xl-3 col-lg-6">
+                    <div class="card border-success mb-3 text-center">
+                        <div class="card-body text-success">
+                            <h5 class="card-title">Cupons</h5>
+                            <p class="card-text">Some quick example text to build.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center col-xl-3 col-lg-6">
+                    <div class="card border-success mb-3 text-center">
+                        <div class="card-body text-success">
+                            <h5 class="card-title">Refunds</h5>
+                            <p class="card-text">Some quick example text to build.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboardPartial" class="row bg-white shadow-sm rounded-3 mt-3 p-5">
+                <partial name="_DashboardPartial" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container  p-4 my-5">
+    <div class="row text-end mt-3 rounded-3 py-5 my-5" style="background:url(../images/dashboard-help.jpg)">
+        <div class="display-5">Help the enviroment</div>
+        <p>With your order you contribute with to the world</p>
+        <div class="d-flex justify-content-end">
+            <a class="btn btn-lg btn-outline-secondary">Read more</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(document).on('click', '#dashboard', function() {
+            $.get('@Url.Page("Index","Dashboard")', function(response) {
+                $('#dashboardPartial').html(response);
+            });
+        });
+
+    </script>
+
+    <script>
+
+        $(document).on('click', '#address', function() {
+            $.get('@Url.Page("Index","Addresses")', function(response) {
+                $('#dashboardPartial').html(response);
+            });
+        });
+
+    </script>
+
+    <script>
+
+        $(document).on('click', '#orders', function() {
+            $.get('@Url.Page("Index","Orders")', function(response) {
+                $('#dashboardPartial').html(response);
+            });
+        });
+
+    </script>
+
+    <script>
+
+        $(document).on('click', '#favorites', function() {
+            $.get('@Url.Page("Index","Favorites")', function(response) {
+                $('#dashboardPartial').html(response);
+            });
+        });
+
+    </script>
+}

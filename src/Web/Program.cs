@@ -36,6 +36,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/Dashboard", "CustomerPolicy");
     options.Conventions.AuthorizePage("/Cart/Summary", "CustomerPolicy");
     options.Conventions.AuthorizePage("/Favorites/Index", "CustomerPolicy");
 });

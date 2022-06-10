@@ -57,7 +57,7 @@
                     <partial name="_CartPartial" model="@number" /> 
                 </a>
                 <a class="d-md-none ps-3" asp-page="/Favorites/Index"><i class="bi bi-heart-fill text-success"></i></a>
-                <a class="d-md-none px-2" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-fill text-success"></i></a>
+                <a class="d-md-none px-2" asp-page="/Dashboard/Index"><i class="bi bi-person-fill text-success"></i></a>
             </div>
             @if (User.Identity.IsAuthenticated)
             {
@@ -92,7 +92,7 @@
                             <partial name="_CartPartial" model="@number" /> 
                         </a>
                         <a class="d-none d-md-block btn btn-outline-success" asp-page="/Favorites/Index"><i class="bi bi-heart-fill"></i></a>
-                        <a class="d-none d-md-block btn btn-outline-success" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="bi bi-person-fill"></i></a>
+                        <a class="d-none d-md-block btn btn-outline-success" asp-page="/Dashboard/Index"><i class="bi bi-person-fill"></i></a>
                     </div>
 
                 </div>
@@ -134,8 +134,8 @@
             </div>
         </div>
     </header>
-    <div class="p-4 bg-light">
-        <main role="main">
+    <div class="bg-light p-0 m-0">
+        <main role="main  p-0 m-0">
             @RenderBody()
         </main>
     </div>

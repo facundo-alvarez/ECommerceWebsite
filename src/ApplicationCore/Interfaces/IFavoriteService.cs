@@ -8,5 +8,6 @@ namespace ApplicationCore.Interfaces
         void RemoveFromFavorite(int id);
         IEnumerable<User_Product> GetUserProducts(string userId);
         int GetId(User_Product userProduct);
+        int GetProductFromUser(string userId, int prodId);
     }
 }

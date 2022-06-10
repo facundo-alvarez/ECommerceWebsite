@@ -18,13 +18,15 @@ namespace Web.Pages.Products
         private readonly IOrderProductService _orderProductService;
         private readonly IOrderService _orderService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IFavoriteService _favoriteService;
 
         public IndexModel(IPaginationService paginationService,
                           IProductService productService,
                           ICategoryService categoryService, 
                           IOrderProductService orderProductService,
                           IOrderService orderService,
-                          IHttpContextAccessor httpContextAccessor)
+                          IHttpContextAccessor httpContextAccessor,
+                          IFavoriteService favoriteService)
         {
             _paginationService = paginationService;
             _productService = productService;
@@ -32,11 +34,15 @@ namespace Web.Pages.Products
             _orderProductService = orderProductService;
             _orderService = orderService;
             _httpContextAccessor = httpContextAccessor;
+            _favoriteService = favoriteService;
         }
 
         [BindProperty(SupportsGet = true)]
         public string Category { get; set; }
         public IReadOnlyList<Product> ProductList { get; set; }
+
+
+        public bool IsAlreadyFavorite { get; set; }
 
         int CurrentPage = 1;
         int PageSize = 8;
@@ -249,6 +255,34 @@ namespace Web.Pages.Products
             ProductList = _paginationService.GetPaginatedResult(ProductList, CurrentPage, PageSize);
 
             return Partial("_ProductListPartial", ProductList);
+        }
+
+        public JsonResult OnGetAddToFavorites(int id)
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userProductsFavorites = _favoriteService.GetProductFromUser(userId,id);
+
+                if (userProductsFavorites == 0)
+                {
+                    User_Product up = new User_Product()
+                    {
+                        UserId = userId,
+                        ProductId = id,
+                    };
+
+                    _favoriteService.AddToFavorite(up);
+                    return new JsonResult("Added");
+                }
+                else
+                {
+                    _favoriteService.RemoveFromFavorite(userProductsFavorites);
+                    return new JsonResult("Removed");
+                }
+            }
+
+            return new JsonResult("Not Autenticated");
         }
 
 

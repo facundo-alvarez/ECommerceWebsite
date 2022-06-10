@@ -12,7 +12,6 @@ namespace ApplicationCore.Services
             _genericRepository = genericRepository;
         }
 
-
         public void AddToFavorite(User_Product userProduct)
         {
             _genericRepository.Insert(userProduct);
@@ -29,6 +28,12 @@ namespace ApplicationCore.Services
         {
             return _genericRepository.GetAll().Where(u => u.UserId == userId);
         }
+
+        public int GetProductFromUser(string userId, int prodId)
+        {
+            return _genericRepository.GetAll().Where(p => p.UserId == userId && p.ProductId == prodId).Select(i => i.Id).FirstOrDefault();
+        }
+
 
         public int GetId(User_Product userProduct)
         {

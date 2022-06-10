@@ -1,0 +1,50 @@
+﻿@using ApplicationCore.Entities
+@using ApplicationCore.Interfaces
+@model List<Product>
+
+<div class="container">
+    <div class="display-6">Favorites</div>
+    <div class="row">
+
+         <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th class="text-muted">Product</th>
+                    <th class="text-muted">Category</th>
+                    <th class="text-muted">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model != null)
+                {
+                    foreach(var product in Model)
+                    {
+
+                        <tr>
+                            <td>
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <img style="height: 4rem" src="@SiteConstants.ImagePath@product.Image" asp-append-version="true">
+                                    </div>
+                                    <div class="col">
+                                        <h5>@product.Name</h5>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @product.Tags
+                            </td>
+                            <td>
+                                @product.Price
+                            </td>
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+        
+</div>

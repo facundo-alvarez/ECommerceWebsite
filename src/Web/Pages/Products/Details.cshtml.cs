@@ -145,36 +145,32 @@ namespace Web.Pages.Products
 
 
 
-        public JsonResult OnGetFavorite(int id, string favorite)
+        public JsonResult OnGetFavorite(int prodId)
         {
-            if(HttpContext.User.Identity.IsAuthenticated)
+            if (HttpContext.User.Identity.IsAuthenticated)
             {
-                var userId =_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userProductsFavorites = _favoriteService.GetProductFromUser(userId, prodId);
 
-                User_Product up = new User_Product()
+                if (userProductsFavorites == 0)
                 {
-                    UserId = userId,
-                    ProductId = id,
-                };
+                    User_Product up = new User_Product()
+                    {
+                        UserId = userId,
+                        ProductId = prodId,
+                    };
 
-                if(favorite == "False")
-                {
                     _favoriteService.AddToFavorite(up);
-                    IsAlreadyFavorite = true;
-                    return new JsonResult("True");            
+                    return new JsonResult("Added");
                 }
                 else
                 {
-                    int favoriteId = _favoriteService.GetId(up);
-                    _favoriteService.RemoveFromFavorite(favoriteId);
-                    IsAlreadyFavorite = false;
-                    return new JsonResult("False");
-                }       
+                    _favoriteService.RemoveFromFavorite(userProductsFavorites);
+                    return new JsonResult("Removed");
+                }
             }
-            else
-            {
-                return new JsonResult("Not Autenticated");
-            }
+
+            return new JsonResult("Not Autenticated");
         }
 
         public ActionResult OnGetPartialCart()

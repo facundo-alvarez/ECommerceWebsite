@@ -56,7 +56,7 @@
                 <a asp-page="/Cart/Index" class="d-md-none ps-2 text-success cartMenu">
                     <partial name="_CartPartial" model="@number" /> 
                 </a>
-                <a class="d-md-none ps-3" asp-page="/Favorites/Index"><i class="bi bi-heart-fill text-success"></i></a>
+                <a class="d-md-none ps-3" asp-page="/Dashboard/Index"><i class="bi bi-heart-fill text-success"></i></a>
                 <a class="d-md-none px-2" asp-page="/Dashboard/Index"><i class="bi bi-person-fill text-success"></i></a>
             </div>
             @if (User.Identity.IsAuthenticated)
@@ -91,7 +91,7 @@
                         <a asp-page="/Cart/Index" class="d-none d-md-block btn btn-outline-success cartMenu">
                             <partial name="_CartPartial" model="@number" /> 
                         </a>
-                        <a class="d-none d-md-block btn btn-outline-success" asp-page="/Favorites/Index"><i class="bi bi-heart-fill"></i></a>
+                        <a class="d-none d-md-block btn btn-outline-success" asp-page="/Dashboard/Index"><i class="bi bi-heart-fill"></i></a>
                         <a class="d-none d-md-block btn btn-outline-success" asp-page="/Dashboard/Index"><i class="bi bi-person-fill"></i></a>
                     </div>
 
@@ -230,7 +230,7 @@
             </div>
 
             <div class="row">
-                <p>	&copy; Copyright 2021 All rights reserved.</p>
+                <p>	&copy; Copyright 2022 All rights reserved.</p>
             </div>
            
         </div>

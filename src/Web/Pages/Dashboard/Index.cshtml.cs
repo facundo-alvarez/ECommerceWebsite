@@ -11,13 +11,16 @@ namespace Web.Pages.Dashboard
         private readonly IFavoriteService _favoriteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IProductService _productService;
+        private readonly IAddressService _addressService;
 
-        public IndexModel(IFavoriteService favoriteService, IHttpContextAccessor httpContextAccessor, IProductService productService)
+        public IndexModel(IFavoriteService favoriteService, IHttpContextAccessor httpContextAccessor, IProductService productService, IAddressService addressService)
         {
             _favoriteService = favoriteService;
             _httpContextAccessor = httpContextAccessor;
             _productService = productService;
+            _addressService = addressService;
         }
+
 
         public void OnGet()
         {
@@ -30,7 +33,10 @@ namespace Web.Pages.Dashboard
 
         public PartialViewResult OnGetAddresses()
         {
-            return Partial("_AddressPartial");
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var addresses = _addressService.GetAddressesWithUserId(userId);
+
+            return Partial("_AddressPartial", addresses);
         }
         
         public PartialViewResult OnGetOrders()
@@ -52,6 +58,16 @@ namespace Web.Pages.Dashboard
             }
 
             return Partial("_FavoritesPartial", FavoriteProducts);
+        }
+
+        public PartialViewResult OnGetDelete(int addressId)
+        {
+            _addressService.RemoveAddress(addressId);
+
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var addresses = _addressService.GetAddressesWithUserId(userId);
+
+            return Partial("_AddressPartial", addresses);
         }
     }
 }

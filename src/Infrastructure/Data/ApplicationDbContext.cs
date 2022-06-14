@@ -42,5 +42,6 @@ namespace Infrastructure.Data
         public DbSet<DiscountCode> DiscountCodes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Order_Product> Order_Products { get; set; }
+        public DbSet<Address> Addresses { get; set; }
     }
 }

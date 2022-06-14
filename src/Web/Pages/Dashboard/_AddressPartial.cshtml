@@ -1,36 +1,50 @@
-﻿<div class="display-4 mb-5">Addresses</div>
+﻿@model IReadOnlyList<ApplicationCore.Entities.Address>
+@{
+    int count = 0;
+}
+
+<div class="display-4 mb-5">Addresses</div>
 
 <div class="row">
-    <div class="col-md px-5">
-        <h4 class="mb-4">Shipping Details</h4>
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input class="form-control" />
+
+    @if(Model == null || Model.Count() == 0)
+    {
+        <p>No addresses</p>
+        <div class="text-center justify-content-center mt-4">
+            <div>
+                <a class="btn btn btn-success" asp-page="Address/Add"><i class="bi bi-plus-lg"></i> Add Address</a>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Phone</label>
-            <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
+    }
+    else
+    {
+        @foreach(var address in Model)
+        {
+            count++;
+            <div class="card g-3 p-0">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h6>Address @count</h6>
+                        <div>
+                            <a class="btn btn-outline-success" asp-page="Address/Edit" asp-route-id="@address.Id">Edit</a>
+                            <button id="@address.Id" class="btn btn-outline-danger removeButton">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">@address.FullName()</h6>
+                    <p class="mb-0">@address.AddressLineOne</p>
+                    <p class="mb-0">@address.AddressLineTwo</p>
+                    <p class="mb-0">@address.PostalCode</p>
+                    <p class="mb-0">@address.Country</p>
+                    <p class="mb-0">@address.Phone</p>
+                </div>
+            </div>
+        }
+        <div class="text-center justify-content-center mt-4">
+            <div>
+                <a class="btn btn btn-success" asp-page="Address/Add"><i class="bi bi-plus-lg"></i> Add Address</a>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Address</label>
-            <input class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Country</label>
-            <input class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">City</label>
-            <input class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Postal Code</label>
-            <input type="number" class="form-control" />
-        </div>
-        <button class="btn btn-success">Save</button>
-    </div>
+    }
 </div>

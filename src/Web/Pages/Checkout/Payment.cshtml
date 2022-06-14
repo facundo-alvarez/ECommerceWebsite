@@ -1,0 +1,50 @@
+﻿@page
+@model Web.Pages.Checkout.PaymentModel
+@{
+    Layout = "_LayoutCheckout";
+}
+
+<div class="container">
+
+    <div class="row my-5">
+
+        <div class="col-md-8 px-5">
+            <h5 class="mb-4 border-bottom border-1 pb-3">PAYMENT METHOD</h5>
+            <div id="addressContainer">
+                <table class="table" id="shippingAddresses">
+                    <tbody>
+                        <tr>
+                            <td style="width:20px">
+                                <div class="form-check">
+                                    <input checked type="radio" class="form-check-inline" name="radioNoLabel" >
+                                </div>
+                            </td>
+                            <td>
+                                <h6 class="mb-0">Payment with Braintree</h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:20px">
+                                <div class="form-check">
+                                    <input disabled type="radio" class="form-check-inline" name="radioNoLabel" >
+                                </div>
+                            </td>
+                            <td>
+                                <h6 class="mb-0">Payment with Paypal</h6>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>               
+            </div>
+        </div>
+
+        <div class="col d-flex align-items-center justify-content-center">
+            <div class="card border-0 bg-light px-4 py-3">
+                <div class="card-body">
+                    <h5>Subtotal: <span class="text-muted">@Model.Order.SubTotal.ToString("C")</span></h5>
+                    <a asp-page="Confirm" class="btn btn-success">Proceed to summary</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

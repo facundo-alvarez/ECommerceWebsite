@@ -37,6 +37,7 @@ builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizeFolder("/Admin", "AdminPolicy");
     options.Conventions.AuthorizeFolder("/Dashboard", "CustomerPolicy");
+    options.Conventions.AuthorizeFolder("/Checkout", "CustomerPolicy");
     options.Conventions.AuthorizePage("/Cart/Summary", "CustomerPolicy");
     options.Conventions.AuthorizePage("/Favorites/Index", "CustomerPolicy");
 });
@@ -57,6 +58,7 @@ builder.Services.AddTransient<IGenericRepository<User_Product>, GenericRepositor
 builder.Services.AddTransient<IGenericRepository<Order_Product>, GenericRepository<Order_Product>>();
 builder.Services.AddTransient<IGenericRepository<Order>, GenericRepository<Order>>();
 builder.Services.AddTransient<IGenericRepository<DiscountCode>, GenericRepository<DiscountCode>>();
+builder.Services.AddTransient<IGenericRepository<Address>, GenericRepository<Address>>();
 
 
 builder.Services.AddTransient<ICategoryService, CategoryService>();
@@ -65,6 +67,7 @@ builder.Services.AddTransient<IFavoriteService, FavoriteService>();
 builder.Services.AddTransient<IDiscountService, DiscountService>();
 builder.Services.AddTransient<IOrderProductService, OrderProductService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddTransient<IAddressService, AddressService>();
 
 
 builder.Services.AddTransient<IPaginationService, PaginationService>();

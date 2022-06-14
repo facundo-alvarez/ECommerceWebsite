@@ -21,5 +21,7 @@ namespace ApplicationCore.Entities
 
         public string OrderStatus { get; set; } = string.Empty;
 
+        public int? AddressId { get; set; }
+        public Address DeliveryAddress { get; set; }
     }
 }

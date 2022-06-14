@@ -1,49 +1,24 @@
-﻿@page 
-@using System.Globalization
-@model Web.Pages.Cart.SummaryModel
+﻿@page
+@model Web.Pages.Checkout.ConfirmModel
 @{
+    Layout = "_LayoutCheckout";
     decimal total = 0;
 }
 
-<div class="container my-5 p-3 shadow-sm bg-white">
-    <div class="display-4 text-center my-5 pb-5">Checkout</div>
-    <div class="row">
-        <div class="col-md px-5">
-            <h4 class="mb-4">Shipping Details</h4>
-            <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Phone</label>
-                <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Address</label>
-                <input class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Country</label>
-                <input class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">City</label>
-                <input class="form-control" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Postal Code</label>
-                <input type="number" class="form-control" />
-            </div>
-        </div>
+<div class="container">
 
-        <div class="col-md mt-5 mt-md-0 px-5">
-            <div class="row">
-                <h4 class="mb-4">Summary</h4>
-                    
+    <div class="flex-row">
+        <h5 class="border-bottom border-1 pb-2 mb-3">SUMMARY</h5>
+    </div>
+    <div class="row">
+
+        <div class="col-md">
+            <div class="mb-5">
+                <h6 class="border-bottom border-1 pb-2">SHIPPING METHOD</h6>
+                <p>Express</p>
+            </div>
+            <div class="mb-5">
+                <h6 class="border-bottom border-1 pb-2">ORDER</h6>
                 <table class="table">
                     <thead>
                         <tr>
@@ -82,53 +57,69 @@
                     </tbody>
                 </table>
             </div>
-            <div class="row mb-4">
-                <div class="col">
-                    <h6>Discount Code</h6>
-                    @if(Model.Order.HasCupon)
-                    {
-                        <div class="input-group">
-                            <input id="discountCode" disabled class="form-control">
-                            <div id="cuponButton">
-                                <button id="removeCupon" class="btn btn-danger"><i class="bi bi-x-lg"></i></button>
-                            </div>
+            
+        </div>
+        <div class="col">
+            <div class="mb-5">
+                <h6 class="border-bottom border-1 pb-2">SHIPPING ADDRESS</h6>
+                <partial name="_AddressCheckPartial" model="@Model.Address" />
+            </div>
+            <div class="mb-5">
+                <h6 class="border-bottom border-1 pb-2">PAYMENT FORM</h6>
+                <p>Braintree</p>
+            </div>
+             <div class="mb-5">
+                <h6 class="border-bottom border-1 pb-2">DISCOUNT CODE</h6>
+                @if(Model.Order.HasCupon)
+                {
+                    <div class="input-group">
+                        <input id="discountCode" disabled class="form-control">
+                        <div id="cuponButton">
+                            <button id="removeCupon" class="btn btn-danger"><i class="bi bi-x-lg"></i></button>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="input-group">
-                            <input id="discountCode" class="form-control" />
-                            <div id="cuponButton">
-                                <button id="discountValidate" class="btn btn-success"><i class="bi bi-check-lg"></i></button>
-                            </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="input-group">
+                        <input id="discountCode" class="form-control" />
+                        <div id="cuponButton">
+                            <button id="discountValidate" class="btn btn-success"><i class="bi bi-check-lg"></i></button>
                         </div>
-                    }
-                </div> 
-                <div class="col text-end">
-                    <div id="totalPartial">
+                    </div>
+                }
+            </div>
+            <div class="mb-5 d-flex justify-content-center text-center">
+                <form method="post" id="payment-form">
+                    <h6 class="border-bottom border-1 pb-2">PAYMENT</h6>
+                    <div id="dropin-container"></div>
+                    <input id="total" hidden asp-for="@total" value="@total" />
+                    <div id="totalPartial" class="mb-5">
                         <partial name="_OrderTotalPartial" model="@Model.Order" />
                     </div>
-                </div>
+                    <input type="hidden" id="nonce" name="payment_method_nonce"/>
+                    <button type="submit" id="submit-button" class="btn btn-success col-6">Submit Order</button>
+                </form>
             </div>
+            
         </div>
 
-        <div class="d-flex justify-content-center text-center my-5 border-2 border-top py-5">
-            <form method="post" id="payment-form">
-                <h4 class="mt-2">Payment</h4>
-                <div id="dropin-container"></div>
-
-                    <input id="total" hidden asp-for="@total" value="@total" />
-
-                <input type="hidden" id="nonce" name="payment_method_nonce"/>
-                <button type="submit" id="submit-button" class="btn btn-primary col-6">Submit Order</button>
-            </form>
-        </div>
     </div>
 </div>
 
-
 @section Scripts {
+    
     <script src="https://js.braintreegateway.com/web/dropin/1.33.1/js/dropin.min.js"></script>
+
+
+    @*Change address*@
+    <script>
+
+        $(document).on('click', '#changeAddress', function() {
+            location.href = '@Url.Page("Address")';
+        });
+
+    </script>
 
     @*Payment*@
     <script>
@@ -159,7 +150,6 @@
 
     </script>
 
-
     @*Validate cupon*@
     <script>
 
@@ -169,7 +159,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: '@Url.Page("Summary","Discount")',
+                url: '@Url.Page("Confirm","Discount")',
                 data: {
                     prodCode: code
                 },
@@ -202,7 +192,7 @@
         $(document).on('click', '#removeCupon', function() {
             $.ajax({
                 type: 'GET',
-                url: '@Url.Page("Summary","RemoveDiscount")',
+                url: '@Url.Page("Confirm","RemoveDiscount")',
                 success: function() { 
                     $('#totalPartial').load('?handler=PartialTotal');
                     $('#discountCode').prop('disabled', false);
@@ -218,5 +208,19 @@
 
     </script>
 
+    @*Address form*@
+    <script>
 
+        $(document).on('change', '#shippingAddresses input', function() {
+
+            if ($(this).attr('id') == 'newAddress') {
+
+                $('#newAddressForm').attr('hidden', false);
+            }
+            else {
+                $('#newAddressForm').attr('hidden', true);
+            }
+        });
+
+    </script>
 }

@@ -1,0 +1,161 @@
+﻿@page
+@using ApplicationCore.Interfaces
+@model Web.Pages.Checkout.AddressModel
+@{
+    Layout = "_LayoutCheckout";
+}
+
+<div class="container">
+
+    <div class="row my-5">
+
+        <div class="col-md-5 px-5">
+            <h5 class="mb-4 pb-3 border-bottom border-1">SHIPPING ADDRESS</h5>
+            <div id="addressContainer">
+                @if(Model.Order.AddressId != null)
+                {
+                    <partial name="_AddressCheckPartial" model="@Model.Address"/>
+                }
+                else
+                {
+                    <partial name="_AddressListPartial" model="@Model.Addresses"/>
+                }
+            </div>
+        </div>
+
+        <div class="col px-5">
+
+            <form method="post">
+                <div id="newAddressForm" hidden>
+                    <div class="row">
+                        <h5 class="mb-3">NEW ADDRESS</h5>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label asp-for="FirstName" class="form-label">First Name</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span class="text-danger" asp-validation-for="FirstName"></span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label asp-for="LastName" class="form-label">Last Name</label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span class="text-danger" asp-validation-for="LastName"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span class="text-danger" asp-validation-for="Email"></span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label">Phone</label>
+                                <input asp-for="Phone" type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" class="form-control" />
+                                <span class="text-danger" asp-validation-for="Phone"></span>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="mb-3">
+                        <label asp-for="AddressLineOne" class="form-label">Address line one</label>
+                        <input asp-for="AddressLineOne" class="form-control" />
+                        <span class="text-danger" asp-validation-for="AddressLineOne"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="AddressLineTwo" class="form-label">Address line two</label>
+                        <input asp-for="AddressLineTwo" class="form-control" />
+                        <span class="text-danger" asp-validation-for="AddressLineTwo"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Country" class="form-label">Country</label>
+                        <input asp-for="Country" class="form-control" />
+                        <span class="text-danger" asp-validation-for="Country"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="State" class="form-label">State</label>
+                        <input asp-for="State" class="form-control" />
+                        <span class="text-danger" asp-validation-for="State"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="City" class="form-label">City</label>
+                        <input asp-for="City" class="form-control" />
+                        <span class="text-danger" asp-validation-for="City"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PostalCode" class="form-label">Postal Code</label>
+                        <input asp-for="PostalCode" class="form-control" />
+                        <span class="text-danger" asp-validation-for="PostalCode"></span>
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Address</button>
+                </div>
+            </form>
+            <div id="proceedDiv">
+                @if(Model.Order.AddressId != null)
+                {
+                    <a id="paymentButton" class="btn btn-success" asp-page="Payment">Proceed to payment</a>
+                }
+            </div>
+        </div> 
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    @*Address form*@
+    <script>
+
+        $(document).on('change', '#shippingAddresses input', function() {
+
+            if ($(this).attr('id') == 'newAddress') {
+
+                $('#newAddressForm').attr('hidden', false);
+                $('#applyButton').attr('disabled', true);
+            }
+            else {
+                $('#newAddressForm').attr('hidden', true);
+                $('#applyButton').attr('disabled', false);
+            }
+        });
+
+    </script>
+
+    @*Apply address*@
+    <script>
+
+        $(document).on('click', '#applyButton', function() {
+
+            var address = parseInt($('#shippingAddresses input:checked').attr('id'));
+
+            if (address != 'newAddress') {
+                $.get('@Url.Page("Address","ApplyAddress")', { 'addressId': address }, function(response) {
+                    $('#proceedDiv').html('<a id="paymentButton" class="btn btn-success" href="/Checkout/Payment">Proceed to payment</a>');
+                    $('#addressContainer').html(response);
+                });
+            }
+        });
+
+    </script>
+
+    @*Change address*@
+    <script>
+
+        $(document).on('click', '#changeAddress', function() {
+            $.get('@Url.Page("Address","ChangeAddress")', function(response) {
+                $('#addressContainer').html(response);
+                $('#proceedDiv').html('');
+            });
+        });
+
+    </script>
+
+}

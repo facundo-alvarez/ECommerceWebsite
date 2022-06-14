@@ -1,0 +1,29 @@
+﻿@model ApplicationCore.Entities.Order   
+
+@{
+    int cero = 0;
+    decimal discountTotal = Model.Total - Model.SubTotal;
+}
+
+@if (Model.HasCupon)
+{
+    <div class="flex-column text-center">
+        <h6>Subtotal: <span class="text-muted">@Model.SubTotal.ToString("C")</span></h6>
+        <h6>Discount: <span class="text-muted">@discountTotal.ToString("C")</span></h6>
+        <h6>Shipping: <span class="text-muted">@cero.ToString("C")</span></h6>
+        <h6>Tax: <span class="text-muted">@cero.ToString("C")</span></h6>
+
+        <h4 class="border-top border-2 pt-2">Total</h4>
+        <h5>@Model.Total.ToString("C")</h5>
+    </div> 
+}
+else
+{
+    <div class="flex-column text-center">
+        <h6>Subtotal: <span class="text-muted">@Model.SubTotal.ToString("C")</span></h6>
+        <h6>Shipping: <span class="text-muted">@cero.ToString("C")</span></h6>
+        <h6>Tax: <span class="text-muted">@cero.ToString("C")</span></h6>
+            
+        <h4 class="border-top border-2 py-">Total <span>@Model.Total.ToString("C")</span></h4>
+    </div>
+}

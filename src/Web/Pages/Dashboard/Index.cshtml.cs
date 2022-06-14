@@ -26,24 +26,6 @@ namespace Web.Pages.Dashboard
         {
         }
 
-        public PartialViewResult OnGetDashboard()
-        {
-            return Partial("_DashboardPartial");
-        }
-
-        public PartialViewResult OnGetAddresses()
-        {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var addresses = _addressService.GetAddressesWithUserId(userId);
-
-            return Partial("_AddressPartial", addresses);
-        }
-        
-        public PartialViewResult OnGetOrders()
-        {
-            return Partial("_OrdersPartial");
-        }
-
         public PartialViewResult OnGetFavorites()
         {
             var FavoriteProducts = new List<Product>();
@@ -60,14 +42,6 @@ namespace Web.Pages.Dashboard
             return Partial("_FavoritesPartial", FavoriteProducts);
         }
 
-        public PartialViewResult OnGetDelete(int addressId)
-        {
-            _addressService.RemoveAddress(addressId);
-
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var addresses = _addressService.GetAddressesWithUserId(userId);
-
-            return Partial("_AddressPartial", addresses);
-        }
+        
     }
 }

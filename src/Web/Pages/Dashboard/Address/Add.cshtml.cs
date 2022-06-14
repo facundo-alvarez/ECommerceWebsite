@@ -64,7 +64,7 @@ namespace Web.Pages.Dashboard.Address
 
             _addressService.AddAddress(address);
 
-            return RedirectToPage("/Dashboard/Index");
+            return RedirectToPage("/Dashboard/Address/Index");
         }
     }
 }

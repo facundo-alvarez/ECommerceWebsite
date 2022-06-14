@@ -1,0 +1,45 @@
+﻿@model IReadOnlyList<ApplicationCore.Entities.Address>
+    
+@{
+    int count = 0;
+}
+
+@if(Model == null || Model.Count() == 0)
+{
+    <div class="row text-center">
+        <i class="bi bi-truck"></i>
+        <span>No addresses saved. Add more addresses for your next order.</span>
+        <a asp-page="Add" class="btn btn-success">Add a new address</a>
+    </div>
+}
+else
+{
+    <div class="d-flex my-5">
+        <a asp-page="Add" class="card justify-content-center align-items-center me-2 text-reset text-decoration-none" style="height:24rem; width:18rem">
+            <i class="bi bi-plus-lg"></i>
+            Add an address
+        </a>
+        @foreach(var address in Model)
+        {
+            count++;
+            <div class="card me-2" style="height:24rem; width:18rem">
+                <div class="card-header">
+                    <div class="d-flex justify-content-end">
+                        <div>
+                            <a asp-page="/Dashboard/Address/Edit" asp-route-id="@address.Id" class="btn"><i class="bi bi-pencil"></i></a>
+                            <button class="btn removeButton" id="@address.Id"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-title">@address.FullName()</h6>
+                    <p class="mb-0">@address.AddressLineOne</p>
+                    <p class="mb-0">@address.AddressLineTwo</p>
+                    <p class="mb-0">@address.PostalCode</p>
+                    <p class="mb-0">@address.Country</p>
+                    <p class="mb-0">@address.Phone</p>
+                </div>
+            </div>
+        }
+    </div>
+}

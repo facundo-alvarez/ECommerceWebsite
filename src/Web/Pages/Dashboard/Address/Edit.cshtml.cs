@@ -80,7 +80,7 @@ namespace Web.Pages.Dashboard.Address
 
             _addressService.UpdateAddress(address);
 
-            return RedirectToPage("/Dashboard/Index");
+            return RedirectToPage("/Dashboard/Address/Index");
         }
     }
 }

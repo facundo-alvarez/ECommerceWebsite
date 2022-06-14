@@ -1,0 +1,48 @@
+﻿@page
+@model Web.Pages.Dashboard.Address.IndexModel
+
+
+<div class="container mb-5 py-5">
+
+    <div class="row">
+        <div class="col-2">
+            
+            <strong class="bd-links-heading d-flex w-100 align-items-center fw-semibold">Account</strong>
+            <ul class="list-unstyled fw-normal pb-2 small">
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/Index">Dashboard</a></li>
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/Orders">Orders</a></li>
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/Address/Index">Addresses</a></li>
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/Favorites">Favorites</a></li>
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/User">Your data</a></li>
+                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="/Dashboard/Configuration">Configuration</a></li>
+            </ul>
+        </div>
+        <div class="col-10">
+            <div class="mb-5">
+                <h1>Addresses</h1>
+                <span>Add and edit your addresses</span>
+            </div>
+            <div id="addressContainer">
+                <partial name="_AddressesPartial" model="@Model.Addresses" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+                                
+@section Scripts {
+
+    <script>
+
+        $(document).on('click', '.removeButton', function() {
+
+            var id = parseInt($(this).attr('id'));
+
+            $.get('@Url.Page("Index","Delete")', { 'addressId': id }, function(response) {
+                $('#addressContainer').html(response);
+            });
+        });
+
+    </script>
+}

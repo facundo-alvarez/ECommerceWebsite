@@ -23,5 +23,7 @@ namespace ApplicationCore.Entities
 
         public int? AddressId { get; set; }
         public Address DeliveryAddress { get; set; }
+
+        public DateTime? OrderDate { get; set; }
     }
 }

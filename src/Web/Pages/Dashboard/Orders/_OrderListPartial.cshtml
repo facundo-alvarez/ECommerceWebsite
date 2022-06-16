@@ -1,0 +1,56 @@
+﻿@using ApplicationCore.Entities
+@using ApplicationCore.Interfaces
+@using System.Globalization
+
+@inject IProductService productService
+@inject IOrderProductService orderProductService
+
+@model IReadOnlyList<ApplicationCore.Entities.Order>
+
+ <div class="row">
+    <div class="col"> 
+        @foreach(var order in Model)
+        {
+            <div class="mb-5">
+                <h4 class="border-1 border-bottom pb-2">@DateTimeFormatInfo.CurrentInfo.GetMonthName(order.OrderDate.Value.Month) @order.OrderDate.Value.Year</h4>
+                <h3 class="mt-2">Order number: @order.Id</h3>     
+                <div class="row mt-4">
+                    <div class="col-3">
+                        <h5>Date of order</h5>
+                        <span>@order.OrderDate.Value.DayOfWeek, @order.OrderDate.Value.Day/@order.OrderDate.Value.Month/@order.OrderDate.Value.Year</span>
+                    </div>
+                    <div class="col-3">
+                        <h5>Total</h5>
+                        <span>@order.Total</span>
+                    </div>
+                    <div class="col-6">
+                        <h5>Order state</h5>
+                        <span>@order.OrderStatus</span>
+                    </div>
+                </div>
+                <div class="row my-5">
+                    @foreach(var product in order.Order_Product)
+                    {
+                        var prod = productService.GetProductById(product.ProductId);
+
+                        <div class="card my-2 mx-1 border-0" style="width: 13rem">
+                            <img src="@SiteConstants.ImagePath@prod.Image" class="card-img-top">
+                            <div class="card-body">
+                                <strong>@prod.Name</strong>
+                                @if(prod.IsOnSale)
+                                {
+                                    <span>@prod.SalePrice?.ToString("C")</span>
+                                }
+                                else
+                                {
+                                    <span>@prod.Price.ToString("C")</span>
+                                }
+                                <p>Quantity: @product.Quantity</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

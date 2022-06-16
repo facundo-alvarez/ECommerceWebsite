@@ -1,0 +1,40 @@
+﻿@page
+@model Web.Pages.Dashboard.Favorites.IndexModel
+
+
+<div class="container mb-5 py-5">
+
+    <div class="row">
+        <div class="col-2">
+            
+            <strong class="bd-links-heading d-flex w-100 align-items-center fw-semibold">Account</strong>
+            <partial name="_DashboardNavigation" />
+        </div>
+        <div class="col-10">
+            <div class="mb-5">
+                <h1>Favorites</h1>
+                <span>The products that you liked</span>
+            </div>
+            <div class="row">
+                @foreach(var prod in Model.Products)
+                {
+                    <a class="card my-2 mx-1 border-0 text-reset text-decoration-none" asp-page="/Products/Details" asp-route-id="@prod.Id" style="width: 13rem">
+                        <img src="@SiteConstants.ImagePath@prod.Image" class="card-img-top">
+                        <div class="card-body">
+                            <strong>@prod.Name</strong>
+                            @if(prod.IsOnSale)
+                            {
+                                <span>@prod.SalePrice?.ToString("C")</span>
+                            }
+                            else
+                            {
+                                <span>@prod.Price.ToString("C")</span>
+                            }
+                            <p>Quantity: @prod.Quantity</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

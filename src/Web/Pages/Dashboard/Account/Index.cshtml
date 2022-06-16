@@ -1,0 +1,102 @@
+﻿@page
+@model Web.Pages.Dashboard.Account.IndexModel
+@{
+}
+
+<div class="container mb-5 py-5">
+
+    <div class="row">
+        <div class="col-2">
+            <strong class="bd-links-heading d-flex w-100 align-items-center fw-semibold">Account</strong>
+            <partial name="_DashboardNavigation" />
+        </div>
+        <div class="col-10  px-4">
+            <div class="mb-5">
+                <h1>Account settings</h1>
+                <span>Update your account settings</span>
+            </div>
+            <div class="row border-2 border-bottom py-5">
+                <div class="col-8">
+                    <div class="row justify-content-between">
+                        <div class="col-1">
+                            <h1><i class="bi bi-person"></i></h1>
+                        </div>
+                        <div class="col-3">
+                            <strong>Name</strong>
+                            <p class="text-muted">@Model.ApplicationUser?.FirstName</p>
+                        </div>
+                        <div class="col-4">
+                            <strong>Last name</strong>
+                            <p class="text-muted">@Model.ApplicationUser?.FirstName</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-between">
+                        <div class="col-1"></div>
+                        <div class="col-3">
+                            <strong>Phone</strong>
+                            <p class="text-muted">@Model.ApplicationUser?.PhoneNumber</p>
+                        </div>
+                        <div class="col-4">
+                            <strong>Date of birth</strong>
+                            <p class="text-muted">@Model.ApplicationUser?.Birthdate.Value.Day/@Model.ApplicationUser?.Birthdate.Value.Month/@Model.ApplicationUser?.Birthdate.Value.Year</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col text-center align-self-center">
+                    <a class="btn btn-outline-success py-2 px-4" asp-area="Identity" asp-page="/Account/Manage/User"><i class="bi bi-pencil"></i>  Edit</a>
+                </div>
+            </div>
+            <div class="row border-2 border-bottom mt-2 py-5">
+                <div class="col-8">
+                    <div class="row justify-content-between">
+                        <div class="col-1">
+                            <h1><i class="bi bi-envelope"></i></h1>
+                        </div>
+                        <div class="col-3">
+                            <strong>Email</strong>
+                            <p class="text-muted">Facundo@example.com</p>
+                        </div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+                <div class="col text-center align-self-center">
+                    <a class="btn btn-outline-success py-2 px-4" asp-area="Identity" asp-page="/Account/Manage/Email"><i class="bi bi-pencil"></i>  Edit</a>
+                </div>
+            </div>
+            <div class="row border-2 border-bottom mt-2 py-5">
+                <div class="col-8">
+                    <div class="row justify-content-between">
+                        <div class="col-1">
+                            <h1><i class="bi bi-shield-lock"></i></h1>
+                        </div>
+                        <div class="col-3">
+                            <strong>Password</strong>
+                            <p class="text-muted">*****************</p>
+                        </div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+                <div class="col text-center align-self-center">
+                    <a class="btn btn-outline-success py-2 px-4" asp-area="Identity" asp-page="/Account/Manage/ChangePassword"><i class="bi bi-pencil"></i>  Edit</a>
+                </div>
+            </div>
+            <div class="row mt-2 py-5">
+                <div class="col-8">
+                    <div class="row justify-content-between">
+                        <div class="col-1">
+                            <h1><i class="bi bi-person-x"></i></h1>
+                        </div>
+                        <div class="col-3">
+                            <strong>Account</strong>
+                            <p class="text-muted">Remove account and all data related</p>
+                        </div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+                <div class="col text-center align-self-center">
+                    <a class="btn btn-outline-danger py-2 px-4" asp-area="Identity" asp-page="/Account/Manage/PersonalData"><i class="bi bi-x-lg"></i>  Delete account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

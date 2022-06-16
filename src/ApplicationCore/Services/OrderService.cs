@@ -38,5 +38,15 @@ namespace ApplicationCore.Services
             _genericRepository.Delete(order.Id);
             _genericRepository.Save();
         }
+
+        public IReadOnlyList<Order> GetAllUserOrders(string id)
+        {
+            return _genericRepository.GetAll().Where(o => o.UserId == id).ToList();
+        }
+
+        public IReadOnlyList<Order> GetAllUserOrdersWithYear(string year, string id)
+        {
+            return _genericRepository.GetAll().Where(o => o.OrderDate.Value.Year.ToString() == year && o.UserId == id).ToList();
+        }
     }
 }

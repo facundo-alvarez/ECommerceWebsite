@@ -1,0 +1,57 @@
+﻿@page
+@model Web.Pages.Dashboard.Orders.IndexModel
+@{
+}
+<div class="container mb-5 py-5">
+
+    <div class="row">
+        <div class="col-2">
+            
+            <strong class="bd-links-heading d-flex w-100 align-items-center fw-semibold">Account</strong>
+            <partial name="_DashboardNavigation" />
+        </div>
+        <div class="col-10">
+            <div class="mb-5">
+                <h1>Orders</h1>
+                <span>Search your previous orders</span>
+                <select id="yearSelect" class="form-select w-25" asp-items="Model.Years"></select>
+
+                <div class="row">
+                    <div id="orderListPartial" class="col my-5">
+                        @if(Model.YearOrders != null)
+                        {
+                            <partial name="_OrdersListPartial" model="Model.YearOrders" />
+                        }
+                        else
+                        {
+                            <div class="row justify-content-center">
+                                <div class="col-4 my-5  text-center align-self-center">    
+                                    <h1><i class="bi bi-bag-x"></i></h1>
+                                    <h4>No orders found</h4>
+                                    <p>Change the filter to search more</p>
+                                    <a asp-page="/Products/Index" asp-route-category="all" class="btn btn-outline-success">Return to shop</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(document).on('change', '#yearSelect', function() {
+
+            var year = $("#yearSelect option:selected").text();
+
+            $.get('@Url.Page("Index","YearOrders")', { 'year': year }, function(response) {
+                $('#orderListPartial').html(response);
+            });
+        });
+
+    </script>
+}                        

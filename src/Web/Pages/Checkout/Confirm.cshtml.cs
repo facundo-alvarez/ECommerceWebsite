@@ -107,6 +107,9 @@ namespace Web.Pages.Checkout
             if (result.Target.ProcessorResponseText == "Approved")
             {
                 HttpContext.Session.Clear();
+                Order.OrderDate = DateTime.Now;
+                Order.OrderStatus = "Finish";
+                _orderService.UpdateOrder(Order);
                 return RedirectToPage("/Order/Success");
             }
             else

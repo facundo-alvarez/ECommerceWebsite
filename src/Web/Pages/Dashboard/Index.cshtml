@@ -6,14 +6,7 @@
         <div class="col-2">
             
             <strong class="bd-links-heading d-flex w-100 align-items-center fw-semibold">Account</strong>
-            <ul class="list-unstyled fw-normal pb-2 small">
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="Index">Dashboard</a></li>
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="Orders">Orders</a></li>
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="Address/Index">Addresses</a></li>
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="Favorites">Favorites</a></li>
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="User">Your data</a></li>
-                <li class="rounded p-3"><a class="text-reset text-decoration-none" asp-page="Configuration">Configuration</a></li>
-            </ul>
+            <partial name="_DashboardNavigation" />
         </div>
 
         <div class="col my-5 my-lg-0 ms-lg-3">

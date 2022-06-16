@@ -6,5 +6,9 @@ namespace ApplicationCore.Entities
     {
         public ICollection<User_Product> User_Product { get; set; }
         public ICollection<Address> Addresses { get; set; }
+
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public DateTime? Birthdate { get; set; }
     }
 }
